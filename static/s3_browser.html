@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS S3 Bucket Browser</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            color: #1e293b;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e40af 0%, #0ea5e9 100%);
+            color: white;
+            padding: 20px 30px;
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #1e40af;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+        }
+        
+        .bucket-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        select, input, button {
+            padding: 10px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        
+        select {
+            flex: 1;
+            min-width: 200px;
+            background: white;
+            cursor: pointer;
+        }
+        
+        select:focus, input:focus {
+            outline: none;
+            border-color: #1e40af;
+        }
+        
+        input {
+            flex: 2;
+            min-width: 300px;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #1e40af 0%, #0ea5e9 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: 500;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .file-input-section {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .file-input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .file-input-group input {
+            flex: 1;
+        }
+        
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .breadcrumb-item {
+            color: #64748b;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 5px;
+            transition: background 0.2s;
+        }
+        
+        .breadcrumb-item:hover {
+            background: #f1f5f9;
+        }
+        
+        .breadcrumb-item.active {
+            color: #1e40af;
+            font-weight: 600;
+        }
+        
+        .breadcrumb-separator {
+            color: #cbd5e1;
+        }
+        
+        .file-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .file-item {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .file-item:hover {
+            border-color: #1e40af;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .file-item.folder {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        }
+        
+        .file-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .file-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            word-break: break-word;
+            color: #1e293b;
+        }
+        
+        .file-meta {
+            font-size: 12px;
+            color: #64748b;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+        }
+        
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #dc2626;
+        }
+        
+        .success {
+            background: #dcfce7;
+            color: #166534;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #16a34a;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+        }
+        
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .file-viewer {
+            margin-top: 20px;
+            border-top: 2px solid #e2e8f0;
+            padding-top: 20px;
+        }
+        
+        .file-viewer-content {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 20px;
+            max-height: 600px;
+            overflow: auto;
+        }
+        
+        .file-viewer img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+        
+        .file-viewer iframe {
+            width: 100%;
+            height: 600px;
+            border: none;
+            border-radius: 8px;
+        }
+        
+        .file-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .file-actions button {
+            flex: 1;
+        }
+        
+        .btn-secondary {
+            background: #64748b;
+        }
+        
+        .btn-secondary:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗂️ AWS S3 Bucket Browser</h1>
+            <p>Browse and access files in your S3 buckets</p>
+        </div>
+        
+        <div class="content">
+            <!-- Bucket Selector -->
+            <div class="section">
+                <div class="section-title">Select Bucket</div>
+                <div class="bucket-selector">
+                    <select id="bucketSelect">
+                        <option value="">Loading buckets...</option>
+                    </select>
+                    <button onclick="loadBuckets()">🔄 Refresh</button>
+                    <button onclick="testConnection()" style="background: #16a34a;">🔌 Test Connection</button>
+                </div>
+            </div>
+            
+            <!-- File Path Input -->
+            <div class="section">
+                <div class="section-title">Access File by Path</div>
+                <div class="file-input-section">
+                    <div class="file-input-group">
+                        <input type="text" id="filePath" placeholder="Enter file path (e.g., folder/subfolder/file.pdf)">
+                        <button onclick="loadFileByPath()">📥 Load File</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Error/Success Messages -->
+            <div id="messageContainer"></div>
+            
+            <!-- Breadcrumb Navigation -->
+            <div id="breadcrumbContainer" style="display: none;">
+                <div class="section-title">Current Location</div>
+                <div class="breadcrumb" id="breadcrumb"></div>
+            </div>
+            
+            <!-- File List -->
+            <div id="fileListContainer" style="display: none;">
+                <div class="section-title">Files and Folders</div>
+                <div class="file-list" id="fileList"></div>
+            </div>
+            
+            <!-- File Viewer -->
+            <div id="fileViewerContainer" style="display: none;" class="file-viewer">
+                <div class="section-title">File Preview</div>
+                <div class="file-viewer-content" id="fileViewer"></div>
+                <div class="file-actions">
+                    <button onclick="downloadFile()">⬇️ Download</button>
+                    <button onclick="getPresignedUrl()">🔗 Get Presigned URL</button>
+                    <button onclick="getCdnUrl()" class="btn-secondary">🌐 Get CDN URL</button>
+                </div>
+            </div>
+            
+            <!-- Loading State -->
+            <div id="loadingContainer" class="loading" style="display: none;">
+                <div style="font-size: 24px; margin-bottom: 10px;">⏳</div>
+                <div>Loading...</div>
+            </div>
+            
+            <!-- Empty State -->
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <div class="empty-state-icon">📁</div>
+                <div>Select a bucket to browse files</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Auto-detect API base URL
+        function getApiBase() {
+            // Check if we're running from file:// protocol
+            if (window.location.protocol === 'file:') {
+                // Default to localhost:8000 when opened as file
+                return 'http://localhost:8000/api/v1/s3';
+            }
+            
+            // Get the current origin (protocol + host + port)
+            let origin = window.location.origin;
+            
+            // Fix: If origin contains 0.0.0.0, replace with localhost
+            // Browsers can't connect to 0.0.0.0, they need localhost or 127.0.0.1
+            if (origin.includes('0.0.0.0')) {
+                origin = origin.replace('0.0.0.0', 'localhost');
+                console.warn('Replaced 0.0.0.0 with localhost in API URL');
+            }
+            
+            // Return full API path
+            return `${origin}/api/v1/s3`;
+        }
+        
+        const API_BASE = getApiBase();
+        let currentBucket = '';
+        let currentPath = '';
+        let currentFileKey = '';
+        
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('S3 Browser initialized');
+            console.log('Current URL:', window.location.href);
+            console.log('Protocol:', window.location.protocol);
+            console.log('API Base URL:', API_BASE);
+            console.log('Full buckets endpoint:', `${API_BASE}/buckets`);
+            
+            // Check if opened as file://
+            if (window.location.protocol === 'file:') {
+                showError(`⚠️ This page must be accessed through the FastAPI server, not as a local file.
+                    <br><br>Please:
+                    <br>1. Make sure your FastAPI server is running
+                    <br>2. Open: <a href="http://localhost:8000/s3_browser.html" target="_blank"><strong>http://localhost:8000/s3_browser.html</strong></a>
+                    <br><br>Or if your server is on a different port, use: <strong>http://localhost:PORT/s3_browser.html</strong>`);
+                hideLoading();
+                return;
+            }
+            
+            // Load buckets directly - don't wait for health check
+            loadBuckets();
+        });
+        
+        // Test API connection (optional)
+        async function testConnection() {
+            try {
+                const url = `${API_BASE}/health`;
+                console.log('Testing connection to:', url);
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                console.log('Health check response:', response.status, response.statusText);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Health check data:', data);
+                    showSuccess('✅ API connection successful!');
+                    return true;
+                } else {
+                    // Health check failed but API might still work
+                    console.warn('Health check failed, but trying to load buckets anyway');
+                    return false;
+                }
+            } catch (error) {
+                console.error('Connection test failed:', error);
+                // Don't show error - just try loading buckets
+                return false;
+            }
+        }
+        
+        // Load buckets list
+        async function loadBuckets() {
+            showLoading();
+            hideMessage();
+            hideFileViewer();
+            
+            try {
+                const url = `${API_BASE}/buckets`;
+                console.log('Fetching buckets from:', url);
+                console.log('Full URL:', url);
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    },
+                    mode: 'cors', // Explicitly set CORS mode
+                    credentials: 'omit' // Don't send credentials
+                }).catch(err => {
+                    console.error('Fetch error:', err);
+                    throw new Error(`Network error: ${err.message}. Please check if the server is running at ${window.location.origin}`);
+                });
+                
+                console.log('Response received:', response);
+                console.log('Response status:', response.status, response.statusText);
+                console.log('Response headers:', [...response.headers.entries()]);
+                
+                if (!response.ok) {
+                    let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.detail || errorData.message || errorMessage;
+                    } catch (e) {
+                        try {
+                            const errorText = await response.text();
+                            if (errorText) {
+                                errorMessage = errorText;
+                            }
+                        } catch (e2) {
+                            console.error('Could not read error response:', e2);
+                        }
+                    }
+                    throw new Error(errorMessage);
+                }
+                
+                const data = await response.json();
+                console.log('Buckets data received:', data);
+                
+                if (!data.buckets || !Array.isArray(data.buckets)) {
+                    console.error('Invalid data structure:', data);
+                    throw new Error('Invalid response format: buckets array not found. Received: ' + JSON.stringify(data));
+                }
+                
+                const select = document.getElementById('bucketSelect');
+                
+                // Clear existing options
+                select.innerHTML = '<option value="">Select a bucket...</option>';
+                
+                // Remove existing event listeners by replacing the select
+                const newSelect = select.cloneNode(false);
+                newSelect.id = 'bucketSelect';
+                newSelect.innerHTML = '<option value="">Select a bucket...</option>';
+                
+                // Add buckets to the select
+                if (data.buckets && Array.isArray(data.buckets)) {
+                    data.buckets.forEach(bucket => {
+                        const option = document.createElement('option');
+                        option.value = bucket.name;
+                        const dateStr = bucket.creation_date ? ' (' + new Date(bucket.creation_date).toLocaleDateString() + ')' : '';
+                        option.textContent = `${bucket.name}${dateStr}`;
+                        newSelect.appendChild(option);
+                    });
+                }
+                
+                // Add change event listener
+                newSelect.addEventListener('change', (e) => {
+                    if (e.target.value) {
+                        currentBucket = e.target.value;
+                        currentPath = '';
+                        loadObjects(currentBucket, '');
+                    }
+                });
+                
+                // Replace the old select with the new one
+                select.parentNode.replaceChild(newSelect, select);
+                
+                const bucketCount = data.total || (data.buckets ? data.buckets.length : 0);
+                showSuccess(`✅ Loaded ${bucketCount} bucket(s)`);
+                hideLoading();
+                
+            } catch (error) {
+                console.error('Error loading buckets:', error);
+                let errorMsg = error.message;
+                
+                // Provide helpful error messages
+                if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+                    const currentOrigin = window.location.origin;
+                    const apiUrl = `${API_BASE}/buckets`;
+                    
+                    if (window.location.protocol === 'file:') {
+                        errorMsg = `⚠️ This HTML file must be served through the FastAPI server!
+                            <br><br>Please:
+                            <br>1. Make sure your FastAPI server is running (check terminal)
+                            <br>2. Open: <a href="http://localhost:8000/s3_browser.html" target="_blank"><strong>http://localhost:8000/s3_browser.html</strong></a>
+                            <br>3. Or if using a different port: <strong>http://localhost:PORT/s3_browser.html</strong>
+                            <br><br>You cannot open this file directly from your file system (file:// protocol).`;
+                    } else {
+                        errorMsg = `Cannot connect to API server. Please ensure:
+                            <br>1. The FastAPI server is running at ${currentOrigin}
+                            <br>2. Try opening: <a href="${apiUrl}" target="_blank">${apiUrl}</a> in a new tab to test
+                            <br>3. Check browser console (F12) for more details
+                            <br><br>Current URL: ${currentOrigin}
+                            <br>API URL: ${apiUrl}`;
+                    }
+                }
+                
+                showError(`Error loading buckets: ${errorMsg}`);
+                hideLoading();
+                
+                // Show helpful debug info
+                console.error('Debug info:');
+                console.error('- Current URL:', window.location.href);
+                console.error('- API Base:', API_BASE);
+                console.error('- Full endpoint:', `${API_BASE}/buckets`);
+                console.error('- Origin:', window.location.origin);
+            }
+        }
+        
+        // Load objects in a bucket
+        async function loadObjects(bucket, prefix) {
+            showLoading();
+            hideMessage();
+            hideFileViewer();
+            
+            try {
+                const url = `${API_BASE}/buckets/${encodeURIComponent(bucket)}/objects?prefix=${encodeURIComponent(prefix)}`;
+                console.log('Fetching objects from:', url);
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                console.log('Response status:', response.status, response.statusText);
+                
+                if (!response.ok) {
+                    let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.detail || errorData.message || errorMessage;
+                    } catch (e) {
+                        const errorText = await response.text();
+                        if (errorText) {
+                            errorMessage = errorText;
+                        }
+                    }
+                    throw new Error(errorMessage);
+                }
+                
+                const data = await response.json();
+                console.log('Objects data received:', data);
+                
+                if (!data.folders || !data.files) {
+                    throw new Error('Invalid response format: folders or files array not found');
+                }
+                
+                currentBucket = bucket;
+                currentPath = prefix;
+                
+                // Update breadcrumb
+                updateBreadcrumb(bucket, prefix);
+                
+                // Display files and folders
+                displayFilesAndFolders(data.folders, data.files);
+                
+                hideLoading();
+                showEmptyState(false);
+                
+            } catch (error) {
+                console.error('Error loading objects:', error);
+                showError(`Error loading objects: ${error.message}`);
+                hideLoading();
+            }
+        }
+        
+        // Update breadcrumb navigation
+        function updateBreadcrumb(bucket, path) {
+            const breadcrumb = document.getElementById('breadcrumb');
+            breadcrumb.innerHTML = '';
+            
+            // Root
+            const rootItem = document.createElement('span');
+            rootItem.className = 'breadcrumb-item' + (path === '' ? ' active' : '');
+            rootItem.textContent = bucket;
+            rootItem.onclick = () => loadObjects(bucket, '');
+            breadcrumb.appendChild(rootItem);
+            
+            // Path parts
+            if (path) {
+                const parts = path.split('/').filter(p => p);
+                let currentPrefix = '';
+                
+                parts.forEach((part, index) => {
+                    const separator = document.createElement('span');
+                    separator.className = 'breadcrumb-separator';
+                    separator.textContent = ' / ';
+                    breadcrumb.appendChild(separator);
+                    
+                    currentPrefix += part + '/';
+                    const isLast = index === parts.length - 1;
+                    
+                    const item = document.createElement('span');
+                    item.className = 'breadcrumb-item' + (isLast ? ' active' : '');
+                    item.textContent = part;
+                    if (!isLast) {
+                        item.onclick = () => loadObjects(bucket, currentPrefix);
+                    }
+                    breadcrumb.appendChild(item);
+                });
+            }
+            
+            document.getElementById('breadcrumbContainer').style.display = 'block';
+        }
+        
+        // Display files and folders
+        function displayFilesAndFolders(folders, files) {
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = '';
+            
+            // Display folders
+            folders.forEach(folder => {
+                const folderItem = createFileItem(folder.name, folder.path, true, null, null);
+                fileList.appendChild(folderItem);
+            });
+            
+            // Display files
+            files.forEach(file => {
+                const fileItem = createFileItem(file.name, file.key, false, file.size, file.last_modified);
+                fileList.appendChild(fileItem);
+            });
+            
+            if (folders.length === 0 && files.length === 0) {
+                showEmptyState(true, 'This folder is empty');
+            } else {
+                document.getElementById('fileListContainer').style.display = 'block';
+            }
+        }
+        
+        // Create file/folder item
+        function createFileItem(name, path, isFolder, size, lastModified) {
+            const item = document.createElement('div');
+            item.className = 'file-item' + (isFolder ? ' folder' : '');
+            
+            const icon = document.createElement('div');
+            icon.className = 'file-icon';
+            icon.textContent = isFolder ? '📁' : getFileIcon(name);
+            
+            const fileName = document.createElement('div');
+            fileName.className = 'file-name';
+            fileName.textContent = name;
+            
+            const meta = document.createElement('div');
+            meta.className = 'file-meta';
+            if (isFolder) {
+                meta.textContent = 'Folder';
+            } else {
+                meta.textContent = formatFileSize(size) + (lastModified ? ' • ' + formatDate(lastModified) : '');
+            }
+            
+            item.appendChild(icon);
+            item.appendChild(fileName);
+            item.appendChild(meta);
+            
+            item.onclick = () => {
+                if (isFolder) {
+                    loadObjects(currentBucket, path);
+                } else {
+                    loadFile(path);
+                }
+            };
+            
+            return item;
+        }
+        
+        // Get file icon based on extension
+        function getFileIcon(filename) {
+            const ext = filename.split('.').pop().toLowerCase();
+            const icons = {
+                'pdf': '📄',
+                'jpg': '🖼️', 'jpeg': '🖼️', 'png': '🖼️', 'gif': '🖼️', 'svg': '🖼️',
+                'mp4': '🎬', 'avi': '🎬', 'mov': '🎬',
+                'mp3': '🎵', 'wav': '🎵',
+                'zip': '📦', 'rar': '📦', 'tar': '📦',
+                'txt': '📝', 'doc': '📝', 'docx': '📝',
+                'xls': '📊', 'xlsx': '📊', 'csv': '📊',
+                'html': '🌐', 'htm': '🌐',
+                'json': '📋', 'xml': '📋',
+            };
+            return icons[ext] || '📄';
+        }
+        
+        // Format file size
+        function formatFileSize(bytes) {
+            if (!bytes) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+        
+        // Format date
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleString();
+        }
+        
+        // Load file by path
+        async function loadFileByPath() {
+            const filePath = document.getElementById('filePath').value.trim();
+            if (!filePath) {
+                showError('Please enter a file path');
+                return;
+            }
+            
+            // If bucket is not selected, try to use default or show error
+            if (!currentBucket) {
+                const bucketSelect = document.getElementById('bucketSelect');
+                if (bucketSelect.value) {
+                    currentBucket = bucketSelect.value;
+                } else {
+                    showError('Please select a bucket first');
+                    return;
+                }
+            }
+            
+            loadFile(filePath);
+        }
+        
+        // Load and display a file
+        async function loadFile(key) {
+            if (!currentBucket) {
+                showError('Please select a bucket first');
+                return;
+            }
+            
+            showLoading();
+            hideMessage();
+            currentFileKey = key;
+            
+            try {
+                const url = `${API_BASE}/buckets/${encodeURIComponent(currentBucket)}/objects/${encodeURIComponent(key)}`;
+                console.log('Fetching file from:', url);
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': '*/*'
+                    }
+                });
+                
+                console.log('Response status:', response.status, response.statusText);
+                
+                if (!response.ok) {
+                    let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.detail || errorData.message || errorMessage;
+                    } catch (e) {
+                        const errorText = await response.text();
+                        if (errorText) {
+                            errorMessage = errorText;
+                        }
+                    }
+                    throw new Error(errorMessage);
+                }
+                
+                const contentType = response.headers.get('content-type') || '';
+                const blob = await response.blob();
+                
+                console.log('File loaded:', key, 'Content-Type:', contentType, 'Size:', blob.size);
+                
+                // Display file based on type
+                displayFile(blob, contentType, key);
+                
+                hideLoading();
+                
+            } catch (error) {
+                console.error('Error loading file:', error);
+                showError(`Error loading file: ${error.message}`);
+                hideLoading();
+            }
+        }
+        
+        // Display file content
+        function displayFile(blob, contentType, key) {
+            const viewer = document.getElementById('fileViewer');
+            viewer.innerHTML = '';
+            
+            const url = URL.createObjectURL(blob);
+            
+            if (contentType.startsWith('image/')) {
+                const img = document.createElement('img');
+                img.src = url;
+                img.alt = key;
+                viewer.appendChild(img);
+            } else if (contentType === 'application/pdf') {
+                const iframe = document.createElement('iframe');
+                iframe.src = url;
+                viewer.appendChild(iframe);
+            } else if (contentType.startsWith('text/') || contentType.includes('json') || contentType.includes('xml')) {
+                blob.text().then(text => {
+                    const pre = document.createElement('pre');
+                    pre.style.whiteSpace = 'pre-wrap';
+                    pre.style.wordBreak = 'break-word';
+                    pre.textContent = text;
+                    viewer.appendChild(pre);
+                });
+            } else {
+                const info = document.createElement('div');
+                info.innerHTML = `
+                    <p><strong>File:</strong> ${key}</p>
+                    <p><strong>Type:</strong> ${contentType}</p>
+                    <p><strong>Size:</strong> ${formatFileSize(blob.size)}</p>
+                    <p style="margin-top: 15px;">This file type cannot be previewed. Please download it.</p>
+                `;
+                viewer.appendChild(info);
+            }
+            
+            document.getElementById('fileViewerContainer').style.display = 'block';
+        }
+        
+        // Download file
+        function downloadFile() {
+            if (!currentBucket || !currentFileKey) return;
+            
+            const url = `${API_BASE}/buckets/${encodeURIComponent(currentBucket)}/objects/${encodeURIComponent(currentFileKey)}?download=true`;
+            window.open(url, '_blank');
+        }
+        
+        // Get presigned URL
+        async function getPresignedUrl() {
+            if (!currentBucket || !currentFileKey) {
+                showError('No file selected');
+                return;
+            }
+            
+            try {
+                const url = `${API_BASE}/buckets/${encodeURIComponent(currentBucket)}/presigned-url?key=${encodeURIComponent(currentFileKey)}`;
+                console.log('Fetching presigned URL from:', url);
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.detail || errorData.message || errorMessage;
+                    } catch (e) {
+                        const errorText = await response.text();
+                        if (errorText) {
+                            errorMessage = errorText;
+                        }
+                    }
+                    throw new Error(errorMessage);
+                }
+                
+                const data = await response.json();
+                
+                // Copy to clipboard
+                await navigator.clipboard.writeText(data.url);
+                showSuccess(`Presigned URL copied to clipboard! Expires in ${data.expiration_seconds} seconds.`);
+                
+            } catch (error) {
+                console.error('Error getting presigned URL:', error);
+                showError(`Error getting presigned URL: ${error.message}`);
+            }
+        }
+        
+        // Get CDN URL
+        async function getCdnUrl() {
+            if (!currentBucket || !currentFileKey) {
+                showError('No file selected');
+                return;
+            }
+            
+            try {
+                const url = `${API_BASE}/buckets/${encodeURIComponent(currentBucket)}/cdn-url?key=${encodeURIComponent(currentFileKey)}`;
+                console.log('Fetching CDN URL from:', url);
+                
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.detail || errorData.message || errorMessage;
+                    } catch (e) {
+                        const errorText = await response.text();
+                        if (errorText) {
+                            errorMessage = errorText;
+                        }
+                    }
+                    throw new Error(errorMessage);
+                }
+                
+                const data = await response.json();
+                
+                // Copy to clipboard
+                await navigator.clipboard.writeText(data.url);
+                showSuccess('CDN URL copied to clipboard!');
+                
+            } catch (error) {
+                console.error('Error getting CDN URL:', error);
+                showError(`Error getting CDN URL: ${error.message}`);
+            }
+        }
+        
+        // UI Helper Functions
+        function showLoading() {
+            document.getElementById('loadingContainer').style.display = 'block';
+        }
+        
+        function hideLoading() {
+            document.getElementById('loadingContainer').style.display = 'none';
+        }
+        
+        function showError(message) {
+            const container = document.getElementById('messageContainer');
+            container.innerHTML = `<div class="error">❌ ${message}</div>`;
+        }
+        
+        function showSuccess(message) {
+            const container = document.getElementById('messageContainer');
+            container.innerHTML = `<div class="success">✅ ${message}</div>`;
+        }
+        
+        function hideMessage() {
+            document.getElementById('messageContainer').innerHTML = '';
+        }
+        
+        function hideFileViewer() {
+            document.getElementById('fileViewerContainer').style.display = 'none';
+        }
+        
+        function showEmptyState(show, message = 'Select a bucket to browse files') {
+            const emptyState = document.getElementById('emptyState');
+            if (show) {
+                emptyState.innerHTML = `
+                    <div class="empty-state-icon">📁</div>
+                    <div>${message}</div>
+                `;
+                emptyState.style.display = 'block';
+            } else {
+                emptyState.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,2260 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Converter - Exab AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-tertiary: #1a1a25;
+            --accent-primary: #00d4aa;
+            --accent-secondary: #7c3aed;
+            --accent-gradient: linear-gradient(135deg, #00d4aa 0%, #7c3aed 100%);
+            --text-primary: #f0f0f5;
+            --text-secondary: #a0a0b0;
+            --text-muted: #606070;
+            --border-color: #2a2a3a;
+            --error-color: #ff4757;
+            --success-color: #00d4aa;
+            --warning-color: #ffa502;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        .bg-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.03;
+            background-image: 
+                radial-gradient(circle at 20% 50%, var(--accent-primary) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, var(--accent-secondary) 0%, transparent 50%);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: var(--accent-gradient);
+            border-radius: 2px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 14px 20px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            color: var(--text-secondary);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .tab-btn:hover {
+            background: var(--border-color);
+        }
+
+        .tab-btn.active {
+            background: var(--accent-gradient);
+            color: white;
+            border-color: transparent;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Main navigation tabs */
+        .main-nav {
+            display: flex;
+            gap: 0;
+            margin-bottom: 30px;
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            padding: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .main-nav-btn {
+            flex: 1;
+            padding: 16px 24px;
+            background: transparent;
+            border: none;
+            border-radius: 12px;
+            color: var(--text-secondary);
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .main-nav-btn:hover {
+            color: var(--text-primary);
+            background: var(--bg-tertiary);
+        }
+
+        .main-nav-btn.active {
+            background: var(--accent-gradient);
+            color: white;
+        }
+
+        .main-section {
+            display: none;
+        }
+
+        .main-section.active {
+            display: block;
+        }
+
+        /* Transcription result */
+        .transcription-result {
+            display: none;
+            margin-top: 25px;
+            padding: 25px;
+            background: linear-gradient(135deg, rgba(0, 212, 170, 0.05), rgba(124, 58, 237, 0.05));
+            border-radius: 12px;
+            border: 1px solid var(--success-color);
+        }
+
+        .transcription-result h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--success-color);
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+
+        .transcription-text {
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 20px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .transcription-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .transcription-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .transcription-actions .btn {
+            flex: 1;
+        }
+
+        /* Input styles */
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 12px;
+        }
+
+        input[type="text"],
+        input[type="url"] {
+            flex: 1;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 14px 18px;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(0, 212, 170, 0.1);
+        }
+
+        input::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* File upload dropzone */
+        .dropzone {
+            border: 2px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--bg-tertiary);
+        }
+
+        .dropzone:hover,
+        .dropzone.dragover {
+            border-color: var(--accent-primary);
+            background: rgba(0, 212, 170, 0.05);
+        }
+
+        .dropzone-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 15px;
+            opacity: 0.6;
+        }
+
+        .dropzone-text {
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .dropzone-hint {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .dropzone input[type="file"] {
+            display: none;
+        }
+
+        .selected-file {
+            display: none;
+            margin-top: 15px;
+            padding: 12px 16px;
+            background: rgba(0, 212, 170, 0.1);
+            border: 1px solid rgba(0, 212, 170, 0.3);
+            border-radius: 8px;
+        }
+
+        .selected-file.visible {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .selected-file-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .selected-file-name {
+            color: var(--accent-primary);
+            font-weight: 500;
+        }
+
+        .selected-file-size {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .remove-file-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 5px;
+            font-size: 1.2rem;
+        }
+
+        .remove-file-btn:hover {
+            color: var(--error-color);
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--accent-gradient);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 212, 170, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+
+        .btn-full {
+            width: 100%;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        /* Formats info */
+        .formats-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .format-tag {
+            background: var(--bg-tertiary);
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .format-tag.supported {
+            color: var(--accent-primary);
+            border: 1px solid rgba(0, 212, 170, 0.3);
+        }
+
+        /* Logs section */
+        .logs-container {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            height: 350px;
+            overflow-y: auto;
+            padding: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+        }
+
+        .log-entry {
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.02);
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .log-entry.start {
+            background: rgba(0, 212, 170, 0.1);
+            border-left: 3px solid var(--accent-primary);
+        }
+
+        .log-entry.progress {
+            background: rgba(124, 58, 237, 0.1);
+            border-left: 3px solid var(--accent-secondary);
+        }
+
+        .log-entry.complete {
+            background: rgba(0, 212, 170, 0.15);
+            border-left: 3px solid var(--success-color);
+        }
+
+        .log-entry.error {
+            background: rgba(255, 71, 87, 0.1);
+            border-left: 3px solid var(--error-color);
+        }
+
+        .log-entry.upload {
+            background: rgba(255, 165, 2, 0.1);
+            border-left: 3px solid var(--warning-color);
+        }
+
+        .log-time {
+            color: var(--text-muted);
+            white-space: nowrap;
+            font-size: 0.8rem;
+        }
+
+        .log-message {
+            color: var(--text-secondary);
+            word-break: break-word;
+        }
+
+        .log-entry.error .log-message {
+            color: var(--error-color);
+        }
+
+        .log-entry.complete .log-message {
+            color: var(--success-color);
+        }
+
+        /* Progress bar */
+        .progress-section {
+            margin-bottom: 20px;
+        }
+
+        .progress-bar-container {
+            background: var(--bg-tertiary);
+            border-radius: 10px;
+            height: 12px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--accent-gradient);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .progress-stage {
+            text-transform: capitalize;
+        }
+
+        /* Audio player */
+        .audio-result {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(0, 212, 170, 0.05);
+            border: 1px solid rgba(0, 212, 170, 0.2);
+            border-radius: 12px;
+        }
+
+        .audio-result.visible {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .audio-result h3 {
+            color: var(--accent-primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .audio-player-wrapper {
+            margin: 20px 0;
+        }
+
+        audio {
+            width: 100%;
+            border-radius: 8px;
+        }
+
+        .audio-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .meta-item {
+            background: var(--bg-tertiary);
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .meta-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .meta-value {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .audio-url-box {
+            margin-top: 15px;
+            padding: 12px;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .audio-url-box input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+        }
+
+        .audio-url-box input:focus {
+            outline: none;
+        }
+
+        .copy-btn {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+        }
+
+        /* Status indicators */
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        .status.idle {
+            background: var(--bg-tertiary);
+            color: var(--text-muted);
+        }
+
+        .status.processing {
+            background: rgba(124, 58, 237, 0.2);
+            color: var(--accent-secondary);
+        }
+
+        .status.uploading {
+            background: rgba(255, 165, 2, 0.2);
+            color: var(--warning-color);
+        }
+
+        .status.success {
+            background: rgba(0, 212, 170, 0.2);
+            color: var(--success-color);
+        }
+
+        .status.error {
+            background: rgba(255, 71, 87, 0.2);
+            color: var(--error-color);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: currentColor;
+        }
+
+        .status.processing .status-dot,
+        .status.uploading .status-dot {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* Spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: var(--accent-primary);
+            text-decoration: none;
+        }
+
+        /* Info box */
+        .info-box {
+            background: rgba(124, 58, 237, 0.1);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .info-box strong {
+            color: var(--accent-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-pattern"></div>
+    
+    <div class="container">
+        <header>
+            <h1>Media Converter</h1>
+            <p class="subtitle">Convert videos to audio and transcribe audio to text</p>
+        </header>
+
+        <!-- Main Navigation -->
+        <div class="main-nav">
+            <button class="main-nav-btn active" onclick="switchMainSection('video')" id="videoNavBtn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="23 7 16 12 23 17 23 7"/>
+                    <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                </svg>
+                Video to Audio
+            </button>
+            <button class="main-nav-btn" onclick="switchMainSection('audio')" id="audioNavBtn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                    <line x1="12" y1="19" x2="12" y2="23"/>
+                    <line x1="8" y1="23" x2="16" y2="23"/>
+                </svg>
+                Audio to Text
+            </button>
+            <button class="main-nav-btn" onclick="switchMainSection('summary')" id="summaryNavBtn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                    <polyline points="10 9 9 9 8 9"/>
+                </svg>
+                Summarize
+            </button>
+        </div>
+
+        <!-- VIDEO TO AUDIO SECTION -->
+        <div id="videoSection" class="main-section active">
+
+        <!-- Input Section -->
+        <div class="card">
+            <div class="card-title">Video Source</div>
+            
+            <div class="info-box">
+                <strong>Note:</strong> Videos must be stored in the S3 bucket. You can either upload a new video or use an existing S3 URL.
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('upload')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    Upload Video
+                </button>
+                <button class="tab-btn" onclick="switchTab('url')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                    </svg>
+                    Use S3 URL
+                </button>
+            </div>
+
+            <!-- Upload Tab -->
+            <div id="uploadTab" class="tab-content active">
+                <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()">
+                    <input type="file" id="fileInput" accept=".mp4,.avi,.mov,.mkv,.webm,.flv" onchange="handleFileSelect(event)">
+                    <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/>
+                        <path d="M12 12v9"/>
+                        <path d="m16 16-4-4-4 4"/>
+                    </svg>
+                    <p class="dropzone-text">Drop your video here or click to browse</p>
+                    <p class="dropzone-hint">Supports: MP4, AVI, MOV, MKV, WebM, FLV (max 60 min)</p>
+                </div>
+
+                <div class="selected-file" id="selectedFile">
+                    <div class="selected-file-info">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" stroke-width="2">
+                            <polygon points="23 7 16 12 23 17 23 7"/>
+                            <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                        </svg>
+                        <span class="selected-file-name" id="fileName">video.mp4</span>
+                        <span class="selected-file-size" id="fileSize">10.5 MB</span>
+                    </div>
+                    <button class="remove-file-btn" onclick="removeFile()">×</button>
+                </div>
+
+                <button class="btn btn-primary btn-full" id="uploadBtn" onclick="uploadAndConvert()" disabled>
+                    <span id="uploadBtnText">Upload & Convert</span>
+                    <div class="spinner" id="uploadBtnSpinner" style="display: none;"></div>
+                </button>
+            </div>
+
+            <!-- URL Tab -->
+            <div id="urlTab" class="tab-content">
+                <div class="input-group">
+                    <label for="videoUrl">Enter the S3 URL of your video file</label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="url" 
+                            id="videoUrl" 
+                            placeholder="https://cdn.example.com/meeting-videos/video.mp4"
+                            autocomplete="off"
+                        >
+                        <button class="btn btn-primary" id="convertBtn" onclick="startConversion()">
+                            <span id="btnText">Convert</span>
+                            <div class="spinner" id="btnSpinner" style="display: none;"></div>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="formats-info">
+                    <span style="color: var(--text-secondary); font-size: 0.85rem; margin-right: 8px;">Supported:</span>
+                    <span class="format-tag supported">.mp4</span>
+                    <span class="format-tag supported">.avi</span>
+                    <span class="format-tag supported">.mov</span>
+                    <span class="format-tag supported">.mkv</span>
+                    <span class="format-tag supported">.webm</span>
+                    <span class="format-tag supported">.flv</span>
+                    <span style="color: var(--text-muted); font-size: 0.85rem; margin-left: 10px;">Max: 60 min</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Section -->
+        <div class="card" id="progressCard" style="display: none;">
+            <div class="card-title">
+                Conversion Progress
+                <span class="status idle" id="statusBadge">
+                    <span class="status-dot"></span>
+                    <span id="statusText">Idle</span>
+                </span>
+            </div>
+
+            <div class="progress-section">
+                <div class="progress-label">
+                    <span class="progress-stage" id="progressStage">Waiting...</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+            </div>
+
+            <div class="logs-container" id="logsContainer">
+                <div class="log-entry" style="color: var(--text-muted);">
+                    Waiting to start...
+                </div>
+            </div>
+
+            <!-- Audio Result -->
+            <div class="audio-result" id="audioResult">
+                <h3>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 18V5l12-2v13"></path>
+                        <circle cx="6" cy="18" r="3"></circle>
+                        <circle cx="18" cy="16" r="3"></circle>
+                    </svg>
+                    Conversion Complete!
+                </h3>
+                
+                <div class="audio-player-wrapper">
+                    <audio id="audioPlayer" controls>
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+
+                <div class="audio-meta">
+                    <div class="meta-item">
+                        <div class="meta-label">Duration</div>
+                        <div class="meta-value" id="metaDuration">--</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-label">File Size</div>
+                        <div class="meta-value" id="metaSize">--</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-label">Processing Time</div>
+                        <div class="meta-value" id="metaTime">--</div>
+                    </div>
+                </div>
+
+                <div class="audio-url-box">
+                    <input type="text" id="audioUrlDisplay" readonly>
+                    <button class="btn btn-secondary copy-btn" onclick="copyAudioUrl()">Copy URL</button>
+                </div>
+            </div>
+        </div>
+
+        </div><!-- End of Video Section -->
+
+        <!-- AUDIO TO TEXT SECTION -->
+        <div id="audioSection" class="main-section">
+
+        <!-- Audio Input Section -->
+        <div class="card">
+            <div class="card-title">Audio Source</div>
+            
+            <div class="info-box">
+                <strong>Note:</strong> Audio files must be stored in the S3 bucket. You can either upload a new audio file or use an existing S3 URL.
+            </div>
+
+            <!-- Tabs for Audio -->
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchAudioTab('upload')" id="audioUploadTabBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    Upload Audio
+                </button>
+                <button class="tab-btn" onclick="switchAudioTab('url')" id="audioUrlTabBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+                        <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+                    </svg>
+                    Use S3 URL
+                </button>
+            </div>
+
+            <!-- Audio Upload Tab -->
+            <div id="audioUploadTab" class="tab-content active">
+                <div class="dropzone" id="audioDropzone" onclick="document.getElementById('audioFileInput').click()">
+                    <input type="file" id="audioFileInput" accept=".mp3,.wav,.m4a,.aac,.ogg,.flac" onchange="handleAudioFileSelect(event)">
+                    <svg class="dropzone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                        <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                        <line x1="12" y1="19" x2="12" y2="23"/>
+                        <line x1="8" y1="23" x2="16" y2="23"/>
+                    </svg>
+                    <p class="dropzone-text">Drop your audio file here or click to browse</p>
+                    <p class="dropzone-hint">Supports: MP3, WAV, M4A, AAC, OGG, FLAC (max 25 MB)</p>
+                </div>
+
+                <div class="selected-file" id="selectedAudioFile">
+                    <div class="selected-file-info">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--accent-primary)" stroke-width="2">
+                            <path d="M9 18V5l12-2v13"></path>
+                            <circle cx="6" cy="18" r="3"></circle>
+                            <circle cx="18" cy="16" r="3"></circle>
+                        </svg>
+                        <span class="selected-file-name" id="audioFileName">audio.mp3</span>
+                        <span class="selected-file-size" id="audioFileSize">5.2 MB</span>
+                    </div>
+                    <button class="remove-file-btn" onclick="removeAudioFile()">×</button>
+                </div>
+
+                <button class="btn btn-primary btn-full" id="transcribeUploadBtn" onclick="uploadAndTranscribe()" disabled>
+                    <span id="transcribeUploadBtnText">Upload & Transcribe</span>
+                    <div class="spinner" id="transcribeUploadBtnSpinner" style="display: none;"></div>
+                </button>
+            </div>
+
+            <!-- Audio URL Tab -->
+            <div id="audioUrlTab" class="tab-content">
+                <div class="input-group">
+                    <label for="audioUrl">Enter the S3 URL of your audio file</label>
+                    <div class="input-wrapper">
+                        <input 
+                            type="url" 
+                            id="audioUrl" 
+                            placeholder="https://cdn.example.com/meeting-audio/audio.mp3"
+                            autocomplete="off"
+                        >
+                        <button class="btn btn-primary" id="transcribeBtn" onclick="startTranscription()">
+                            <span id="transcribeBtnText">Transcribe</span>
+                            <div class="spinner" id="transcribeBtnSpinner" style="display: none;"></div>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="formats-info">
+                    <span style="color: var(--text-secondary); font-size: 0.85rem; margin-right: 8px;">Supported:</span>
+                    <span class="format-tag supported">.mp3</span>
+                    <span class="format-tag supported">.wav</span>
+                    <span class="format-tag supported">.m4a</span>
+                    <span class="format-tag supported">.aac</span>
+                    <span class="format-tag supported">.ogg</span>
+                    <span class="format-tag supported">.flac</span>
+                    <span style="color: var(--text-muted); font-size: 0.85rem; margin-left: 10px;">Max: 25 MB</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transcription Progress Section -->
+        <div class="card" id="transcriptionProgressCard" style="display: none;">
+            <div class="card-title">
+                Transcription Progress
+                <span class="status idle" id="transcriptionStatusBadge">
+                    <span class="status-dot"></span>
+                    <span id="transcriptionStatusText">Idle</span>
+                </span>
+            </div>
+
+            <div class="progress-section">
+                <div class="progress-label">
+                    <span class="progress-stage" id="transcriptionProgressStage">Waiting...</span>
+                    <span id="transcriptionProgressPercent">0%</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="transcriptionProgressBar"></div>
+                </div>
+            </div>
+
+            <div class="logs-container" id="transcriptionLogsContainer">
+                <div class="log-entry" style="color: var(--text-muted);">
+                    Waiting to start...
+                </div>
+            </div>
+
+            <!-- Transcription Result -->
+            <div class="transcription-result" id="transcriptionResult">
+                <h3>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                        <polyline points="10 9 9 9 8 9"/>
+                    </svg>
+                    Transcription Complete!
+                </h3>
+                
+                <div class="transcription-text" id="transcriptionText">
+                    Transcribed text will appear here...
+                </div>
+
+                <div class="transcription-meta">
+                    <div class="meta-item">
+                        <div class="meta-label">Word Count</div>
+                        <div class="meta-value" id="metaWordCount">--</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-label">Language</div>
+                        <div class="meta-value" id="metaLanguage">--</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-label">Processing Time</div>
+                        <div class="meta-value" id="metaTranscriptionTime">--</div>
+                    </div>
+                </div>
+
+                <div class="transcription-actions">
+                    <button class="btn btn-primary" onclick="copyTranscription()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                        </svg>
+                        Copy Text
+                    </button>
+                    <button class="btn btn-secondary" onclick="downloadTranscription()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        Download .txt
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        </div><!-- End of Audio Section -->
+
+        <!-- SUMMARY SECTION -->
+        <div id="summarySection" class="main-section">
+
+        <!-- Transcript Input Section -->
+        <div class="card">
+            <div class="card-title">Meeting Transcript</div>
+            
+            <div class="info-box">
+                <strong>Tip:</strong> Paste your meeting transcript below. You can use the Audio to Text feature to transcribe audio first, then summarize here.
+            </div>
+
+            <div class="input-group">
+                <label for="transcriptInput">Paste your meeting transcript</label>
+                <textarea 
+                    id="transcriptInput" 
+                    placeholder="Paste the meeting transcript here...
+
+Example:
+John: Good morning everyone. Let's start with the project updates.
+Sarah: The development is on track. We've completed the authentication module.
+John: Great! What about the timeline for the next phase?
+Sarah: We should be ready for testing by next week.
+..."
+                    rows="10"
+                    style="width: 100%; padding: 15px; background: var(--bg-tertiary); border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-primary); font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; resize: vertical; min-height: 200px;"
+                ></textarea>
+            </div>
+
+            <div class="input-group">
+                <label>Summary Type</label>
+                <div class="tabs" style="margin-bottom: 0;">
+                    <button class="tab-btn active" onclick="selectSummaryType('brief')" id="briefSummaryBtn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="21" y1="10" x2="3" y2="10"/>
+                            <line x1="21" y1="6" x2="3" y2="6"/>
+                            <line x1="21" y1="14" x2="3" y2="14"/>
+                        </svg>
+                        Brief Summary
+                    </button>
+                    <button class="tab-btn" onclick="selectSummaryType('detailed')" id="detailedSummaryBtn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="21" y1="10" x2="7" y2="10"/>
+                            <line x1="21" y1="6" x2="3" y2="6"/>
+                            <line x1="21" y1="14" x2="3" y2="14"/>
+                            <line x1="21" y1="18" x2="7" y2="18"/>
+                        </svg>
+                        Detailed Summary
+                    </button>
+                </div>
+            </div>
+
+            <button class="btn btn-primary btn-full" id="summarizeBtn" onclick="startSummarization()">
+                <span id="summarizeBtnText">Generate Summary</span>
+                <div class="spinner" id="summarizeBtnSpinner" style="display: none;"></div>
+            </button>
+        </div>
+
+        <!-- Summary Result Section -->
+        <div class="card" id="summaryResultCard" style="display: none;">
+            <div class="card-title">
+                Meeting Summary
+                <span class="status idle" id="summaryStatusBadge">
+                    <span class="status-dot"></span>
+                    <span id="summaryStatusText">Idle</span>
+                </span>
+            </div>
+
+            <div class="transcription-result" id="summaryResult" style="display: block; border-color: var(--border-color);">
+                <div class="transcription-text" id="summaryText" style="min-height: 150px;">
+                    Summary will appear here...
+                </div>
+
+                <div class="transcription-meta" id="summaryMeta" style="display: none;">
+                    <div class="meta-item">
+                        <div class="meta-label">Summary Type</div>
+                        <div class="meta-value" id="metaSummaryType">--</div>
+                    </div>
+                    <div class="meta-item">
+                        <div class="meta-label">Word Count</div>
+                        <div class="meta-value" id="metaSummaryWords">--</div>
+                    </div>
+                </div>
+
+                <div class="transcription-actions" id="summaryActions" style="display: none;">
+                    <button class="btn btn-primary" onclick="copySummary()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                        </svg>
+                        Copy Summary
+                    </button>
+                    <button class="btn btn-secondary" onclick="downloadSummary()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        Download .txt
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        </div><!-- End of Summary Section -->
+
+        <footer>
+            <p>Part of <a href="/">Exab AI</a> Meeting Summary Tools</p>
+            <p style="margin-top: 8px;">
+                <a href="/docs#/Meeting%20Summary">API Documentation</a> · 
+                <a href="/api/v1/meeting-summary/health">Health Check</a>
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // API base URL - detect if opened directly from filesystem
+        const API_BASE = (window.location.protocol === 'file:') 
+            ? 'http://127.0.0.1:8000' 
+            : window.location.origin;
+        const S3_BUCKET = 'sanad-data-source';
+        const VIDEO_PREFIX = 'meeting-videos';
+        const AUDIO_PREFIX = 'meeting-audio';
+        
+        let selectedFile = null;
+        let selectedAudioFile = null;
+        let isProcessing = false;
+        let isTranscribing = false;
+        let transcribedText = '';
+
+        // Debug: Log API base on load
+        console.log('Media Converter loaded');
+        console.log('Protocol:', window.location.protocol);
+        console.log('API Base:', API_BASE);
+        console.log('S3 Bucket:', S3_BUCKET);
+
+        // Summary state
+        let selectedSummaryType = 'brief';
+        let isSummarizing = false;
+        let summaryText = '';
+
+        // Main section switching
+        function switchMainSection(section) {
+            document.querySelectorAll('.main-nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.main-section').forEach(s => s.classList.remove('active'));
+            
+            if (section === 'video') {
+                document.getElementById('videoNavBtn').classList.add('active');
+                document.getElementById('videoSection').classList.add('active');
+            } else if (section === 'audio') {
+                document.getElementById('audioNavBtn').classList.add('active');
+                document.getElementById('audioSection').classList.add('active');
+            } else if (section === 'summary') {
+                document.getElementById('summaryNavBtn').classList.add('active');
+                document.getElementById('summarySection').classList.add('active');
+            }
+        }
+
+        // Tab switching for video section
+        function switchTab(tab) {
+            const videoSection = document.getElementById('videoSection');
+            videoSection.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            videoSection.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            if (tab === 'upload') {
+                videoSection.querySelector('.tab-btn:first-child').classList.add('active');
+                document.getElementById('uploadTab').classList.add('active');
+            } else {
+                videoSection.querySelector('.tab-btn:last-child').classList.add('active');
+                document.getElementById('urlTab').classList.add('active');
+            }
+        }
+
+        // Tab switching for audio section
+        function switchAudioTab(tab) {
+            document.getElementById('audioUploadTabBtn').classList.remove('active');
+            document.getElementById('audioUrlTabBtn').classList.remove('active');
+            document.getElementById('audioUploadTab').classList.remove('active');
+            document.getElementById('audioUrlTab').classList.remove('active');
+            
+            if (tab === 'upload') {
+                document.getElementById('audioUploadTabBtn').classList.add('active');
+                document.getElementById('audioUploadTab').classList.add('active');
+            } else {
+                document.getElementById('audioUrlTabBtn').classList.add('active');
+                document.getElementById('audioUrlTab').classList.add('active');
+            }
+        }
+
+        // Drag and drop handlers
+        const dropzone = document.getElementById('dropzone');
+        
+        dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.classList.add('dragover');
+        });
+
+        dropzone.addEventListener('dragleave', () => {
+            dropzone.classList.remove('dragover');
+        });
+
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        }
+
+        function handleFile(file) {
+            // Validate file type
+            const validExtensions = ['.mp4', '.avi', '.mov', '.mkv', '.webm', '.flv'];
+            const ext = '.' + file.name.split('.').pop().toLowerCase();
+            
+            if (!validExtensions.includes(ext)) {
+                alert(`Invalid file type: ${ext}\nSupported formats: ${validExtensions.join(', ')}`);
+                return;
+            }
+
+            selectedFile = file;
+            
+            // Show selected file info
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = formatFileSize(file.size);
+            document.getElementById('selectedFile').classList.add('visible');
+            document.getElementById('uploadBtn').disabled = false;
+        }
+
+        function removeFile() {
+            selectedFile = null;
+            document.getElementById('fileInput').value = '';
+            document.getElementById('selectedFile').classList.remove('visible');
+            document.getElementById('uploadBtn').disabled = true;
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+            return (bytes / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
+        }
+
+        function updateStatus(status, text) {
+            const badge = document.getElementById('statusBadge');
+            const statusText = document.getElementById('statusText');
+            
+            badge.className = `status ${status}`;
+            statusText.textContent = text;
+        }
+
+        function updateProgress(stage, percent) {
+            document.getElementById('progressStage').textContent = stage;
+            document.getElementById('progressPercent').textContent = `${percent}%`;
+            document.getElementById('progressBar').style.width = `${percent}%`;
+        }
+
+        function addLog(type, message) {
+            const container = document.getElementById('logsContainer');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            
+            const time = new Date().toLocaleTimeString();
+            entry.innerHTML = `
+                <span class="log-time">${time}</span>
+                <span class="log-message">${message}</span>
+            `;
+            
+            container.appendChild(entry);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function clearLogs() {
+            document.getElementById('logsContainer').innerHTML = '';
+        }
+
+        function showResult(data) {
+            const result = document.getElementById('audioResult');
+            const player = document.getElementById('audioPlayer');
+            const urlDisplay = document.getElementById('audioUrlDisplay');
+            
+            // Set audio source
+            const audioUrl = data.audio_url || data.cdn_url || data.presigned_url;
+            player.src = audioUrl;
+            urlDisplay.value = audioUrl;
+            
+            // Set metadata
+            document.getElementById('metaDuration').textContent = 
+                `${data.duration_minutes || (data.duration_seconds / 60).toFixed(1)} min`;
+            document.getElementById('metaSize').textContent = 
+                `${data.audio_size_mb || '--'} MB`;
+            document.getElementById('metaTime').textContent = 
+                `${data.processing_time_seconds || '--'} sec`;
+            
+            result.classList.add('visible');
+        }
+
+        function copyAudioUrl() {
+            const urlInput = document.getElementById('audioUrlDisplay');
+            urlInput.select();
+            document.execCommand('copy');
+            
+            const btn = document.querySelector('.copy-btn');
+            const originalText = btn.textContent;
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = originalText, 2000);
+        }
+
+        function setUploadButtonState(loading) {
+            const btn = document.getElementById('uploadBtn');
+            const text = document.getElementById('uploadBtnText');
+            const spinner = document.getElementById('uploadBtnSpinner');
+            
+            btn.disabled = loading;
+            text.textContent = loading ? 'Processing...' : 'Upload & Convert';
+            spinner.style.display = loading ? 'block' : 'none';
+            isProcessing = loading;
+        }
+
+        function setConvertButtonState(loading) {
+            const btn = document.getElementById('convertBtn');
+            const text = document.getElementById('btnText');
+            const spinner = document.getElementById('btnSpinner');
+            
+            btn.disabled = loading;
+            text.textContent = loading ? 'Converting...' : 'Convert';
+            spinner.style.display = loading ? 'block' : 'none';
+            isProcessing = loading;
+        }
+
+        // Upload video to S3 and then convert
+        async function uploadAndConvert() {
+            if (!selectedFile || isProcessing) return;
+
+            // Show progress card
+            document.getElementById('progressCard').style.display = 'block';
+            document.getElementById('audioResult').classList.remove('visible');
+            
+            // Reset UI
+            clearLogs();
+            updateStatus('uploading', 'Uploading');
+            updateProgress('Uploading to S3', 0);
+            setUploadButtonState(true);
+
+            try {
+                // Upload to S3 using XMLHttpRequest for progress tracking
+                addLog('upload', `Uploading ${selectedFile.name} (${formatFileSize(selectedFile.size)}) to S3...`);
+                
+                const uploadResult = await uploadFileWithProgress(selectedFile);
+                
+                addLog('complete', `Video uploaded: ${uploadResult.key}`);
+                updateProgress('Upload complete', 30);
+
+                // Get the video URL (use CDN URL if available, otherwise presigned)
+                const videoUrl = uploadResult.cdn_url || uploadResult.presigned_url;
+                
+                if (!videoUrl) {
+                    throw new Error('Failed to get video URL after upload');
+                }
+
+                addLog('log', `Video URL: ${videoUrl}`);
+                
+                // Now start conversion
+                await startConversionWithUrl(videoUrl);
+
+            } catch (error) {
+                addLog('error', `Error: ${error.message}`);
+                updateStatus('error', 'Failed');
+                setUploadButtonState(false);
+            }
+        }
+
+        // Upload file with progress tracking using XMLHttpRequest
+        function uploadFileWithProgress(file) {
+            return new Promise((resolve, reject) => {
+                const uploadUrl = `${API_BASE}/api/v1/s3/upload/${S3_BUCKET}?prefix=${VIDEO_PREFIX}`;
+                console.log('Upload URL:', uploadUrl);
+                console.log('File:', file.name, 'Size:', file.size);
+                
+                addLog('log', `Upload URL: ${uploadUrl}`);
+                
+                const xhr = new XMLHttpRequest();
+                const formData = new FormData();
+                formData.append('file', file);
+
+                // Track upload progress
+                xhr.upload.addEventListener('progress', (event) => {
+                    if (event.lengthComputable) {
+                        const percent = Math.round((event.loaded / event.total) * 100);
+                        updateProgress(`Uploading (${percent}%)`, Math.round(percent * 0.3)); // 0-30%
+                        
+                        // Log progress at 25%, 50%, 75%
+                        if (percent === 25 || percent === 50 || percent === 75) {
+                            addLog('progress', `Upload progress: ${percent}% (${formatFileSize(event.loaded)} / ${formatFileSize(event.total)})`);
+                        }
+                    }
+                });
+
+                xhr.addEventListener('load', () => {
+                    console.log('Upload response status:', xhr.status);
+                    console.log('Upload response:', xhr.responseText);
+                    
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        try {
+                            const result = JSON.parse(xhr.responseText);
+                            resolve(result);
+                        } catch (e) {
+                            reject(new Error('Invalid response from server: ' + xhr.responseText));
+                        }
+                    } else {
+                        try {
+                            const error = JSON.parse(xhr.responseText);
+                            reject(new Error(error.detail || error.error || `Upload failed with status ${xhr.status}`));
+                        } catch (e) {
+                            reject(new Error(`Upload failed with status ${xhr.status}: ${xhr.statusText}. Response: ${xhr.responseText}`));
+                        }
+                    }
+                });
+
+                xhr.addEventListener('error', (event) => {
+                    console.error('XHR error event:', event);
+                    reject(new Error('Network error during upload. Please check your connection and try again. Check browser console for details.'));
+                });
+
+                xhr.addEventListener('timeout', () => {
+                    reject(new Error('Upload timed out. The file may be too large or connection too slow.'));
+                });
+
+                xhr.addEventListener('abort', () => {
+                    reject(new Error('Upload was cancelled'));
+                });
+
+                // Set timeout to 30 minutes for large files
+                xhr.timeout = 30 * 60 * 1000;
+
+                xhr.open('POST', uploadUrl);
+                xhr.send(formData);
+            });
+        }
+
+        // Start conversion with URL
+        async function startConversion() {
+            const videoUrl = document.getElementById('videoUrl').value.trim();
+            
+            if (!videoUrl) {
+                alert('Please enter a video URL');
+                return;
+            }
+
+            if (!videoUrl.startsWith('http://') && !videoUrl.startsWith('https://')) {
+                alert('Please enter a valid URL starting with http:// or https://');
+                return;
+            }
+
+            // Show progress card
+            document.getElementById('progressCard').style.display = 'block';
+            document.getElementById('audioResult').classList.remove('visible');
+            
+            // Reset UI
+            clearLogs();
+            updateStatus('processing', 'Processing');
+            updateProgress('Starting', 0);
+            setConvertButtonState(true);
+
+            await startConversionWithUrl(videoUrl);
+        }
+
+        async function startConversionWithUrl(videoUrl) {
+            try {
+                updateStatus('processing', 'Converting');
+                
+                // Call conversion API
+                const response = await fetch(`${API_BASE}/api/v1/meeting-summary/video-to-audio`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        video_url: videoUrl
+                    })
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || error.detail || 'Failed to start conversion');
+                }
+
+                // Read the stream
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    
+                    if (done) break;
+                    
+                    buffer += decoder.decode(value, { stream: true });
+                    
+                    // Process complete SSE events
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop(); // Keep incomplete line in buffer
+                    
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const data = line.slice(6);
+                            
+                            if (data === '[DONE]') {
+                                updateStatus('success', 'Complete');
+                                setUploadButtonState(false);
+                                setConvertButtonState(false);
+                                continue;
+                            }
+                            
+                            try {
+                                const event = JSON.parse(data);
+                                handleEvent(event);
+                            } catch (e) {
+                                console.warn('Failed to parse event:', data);
+                            }
+                        }
+                    }
+                }
+
+            } catch (error) {
+                addLog('error', `Error: ${error.message}`);
+                updateStatus('error', 'Failed');
+                setUploadButtonState(false);
+                setConvertButtonState(false);
+            }
+        }
+
+        function handleEvent(event) {
+            const type = event.event || 'log';
+            const message = event.message || JSON.stringify(event);
+            
+            switch (type) {
+                case 'start':
+                    addLog('start', message);
+                    updateProgress('Starting', 35);
+                    break;
+                    
+                case 'log':
+                    addLog('log', message);
+                    break;
+                    
+                case 'progress':
+                    const stage = event.stage || 'processing';
+                    const progress = event.progress || 0;
+                    
+                    // Adjust progress to account for upload phase (30%)
+                    let overallProgress = 30;
+                    if (stage === 'download') {
+                        overallProgress = 30 + progress * 0.25; // 30-55%
+                        updateProgress(`Downloading (${progress}%)`, Math.round(overallProgress));
+                    } else if (stage === 'convert') {
+                        overallProgress = 55 + progress * 0.30; // 55-85%
+                        updateProgress(`Converting (${progress}%)`, Math.round(overallProgress));
+                    } else if (stage === 'upload') {
+                        overallProgress = 85 + progress * 0.15; // 85-100%
+                        updateProgress(`Uploading audio (${progress}%)`, Math.round(overallProgress));
+                    }
+                    
+                    if (event.downloaded_mb) {
+                        addLog('progress', `Downloaded: ${event.downloaded_mb} / ${event.total_mb} MB (${event.progress}%)`);
+                    }
+                    break;
+                    
+                case 'complete':
+                    addLog('complete', message);
+                    updateProgress('Complete', 100);
+                    updateStatus('success', 'Complete');
+                    showResult(event);
+                    setUploadButtonState(false);
+                    setConvertButtonState(false);
+                    break;
+                    
+                case 'error':
+                    addLog('error', message);
+                    updateStatus('error', 'Failed');
+                    setUploadButtonState(false);
+                    setConvertButtonState(false);
+                    break;
+                    
+                default:
+                    addLog('log', message);
+            }
+        }
+
+        // Enter key to submit (URL tab)
+        document.getElementById('videoUrl').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !isProcessing) {
+                startConversion();
+            }
+        });
+
+        // ==================== AUDIO TO TEXT FUNCTIONS ====================
+
+        // Audio file handling
+        function handleAudioFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const validExtensions = ['.mp3', '.wav', '.m4a', '.aac', '.ogg', '.flac'];
+                const ext = '.' + file.name.split('.').pop().toLowerCase();
+                
+                if (!validExtensions.includes(ext)) {
+                    alert('Please select a valid audio file. Supported formats: ' + validExtensions.join(', '));
+                    event.target.value = '';
+                    return;
+                }
+                
+                // 25 MB limit
+                if (file.size > 25 * 1024 * 1024) {
+                    alert('Audio file is too large. Maximum size is 25 MB.');
+                    event.target.value = '';
+                    return;
+                }
+                
+                selectedAudioFile = file;
+                
+                document.getElementById('audioFileName').textContent = file.name;
+                document.getElementById('audioFileSize').textContent = formatFileSize(file.size);
+                document.getElementById('selectedAudioFile').classList.add('visible');
+                document.getElementById('transcribeUploadBtn').disabled = false;
+            }
+        }
+
+        function removeAudioFile() {
+            selectedAudioFile = null;
+            document.getElementById('audioFileInput').value = '';
+            document.getElementById('selectedAudioFile').classList.remove('visible');
+            document.getElementById('transcribeUploadBtn').disabled = true;
+        }
+
+        // Audio dropzone
+        const audioDropzone = document.getElementById('audioDropzone');
+        if (audioDropzone) {
+            audioDropzone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                audioDropzone.classList.add('dragover');
+            });
+            
+            audioDropzone.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                audioDropzone.classList.remove('dragover');
+            });
+            
+            audioDropzone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                audioDropzone.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    const file = files[0];
+                    const validExtensions = ['.mp3', '.wav', '.m4a', '.aac', '.ogg', '.flac'];
+                    const ext = '.' + file.name.split('.').pop().toLowerCase();
+                    
+                    if (validExtensions.includes(ext) && file.size <= 25 * 1024 * 1024) {
+                        selectedAudioFile = file;
+                        document.getElementById('audioFileName').textContent = file.name;
+                        document.getElementById('audioFileSize').textContent = formatFileSize(file.size);
+                        document.getElementById('selectedAudioFile').classList.add('visible');
+                        document.getElementById('transcribeUploadBtn').disabled = false;
+                    } else {
+                        alert('Please select a valid audio file (MP3, WAV, M4A, AAC, OGG, FLAC) under 25 MB.');
+                    }
+                }
+            });
+        }
+
+        // Transcription UI helpers
+        function clearTranscriptionLogs() {
+            document.getElementById('transcriptionLogsContainer').innerHTML = '';
+        }
+
+        function addTranscriptionLog(type, message) {
+            const container = document.getElementById('transcriptionLogsContainer');
+            const now = new Date().toLocaleTimeString();
+            
+            const logEntry = document.createElement('div');
+            logEntry.className = 'log-entry';
+            
+            let icon = '';
+            switch (type) {
+                case 'start':
+                    icon = `<span class="log-icon">▶️</span>`;
+                    break;
+                case 'progress':
+                    icon = `<span class="log-icon">⏳</span>`;
+                    break;
+                case 'complete':
+                    icon = `<span class="log-icon">✅</span>`;
+                    break;
+                case 'error':
+                    icon = `<span class="log-icon">❌</span>`;
+                    break;
+                default:
+                    icon = `<span class="log-icon">📝</span>`;
+            }
+            
+            logEntry.innerHTML = `<span class="log-time">${now}</span> ${icon}<span class="log-message">${message}</span>`;
+            container.appendChild(logEntry);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function updateTranscriptionProgress(stage, percent) {
+            document.getElementById('transcriptionProgressStage').textContent = stage;
+            document.getElementById('transcriptionProgressPercent').textContent = percent + '%';
+            document.getElementById('transcriptionProgressBar').style.width = percent + '%';
+        }
+
+        function updateTranscriptionStatus(status, text) {
+            const badge = document.getElementById('transcriptionStatusBadge');
+            badge.className = `status ${status}`;
+            document.getElementById('transcriptionStatusText').textContent = text;
+        }
+
+        function setTranscribeUploadButtonState(loading) {
+            const btn = document.getElementById('transcribeUploadBtn');
+            const text = document.getElementById('transcribeUploadBtnText');
+            const spinner = document.getElementById('transcribeUploadBtnSpinner');
+            
+            btn.disabled = loading;
+            text.textContent = loading ? 'Transcribing...' : 'Upload & Transcribe';
+            spinner.style.display = loading ? 'block' : 'none';
+            isTranscribing = loading;
+        }
+
+        function setTranscribeButtonState(loading) {
+            const btn = document.getElementById('transcribeBtn');
+            const text = document.getElementById('transcribeBtnText');
+            const spinner = document.getElementById('transcribeBtnSpinner');
+            
+            btn.disabled = loading;
+            text.textContent = loading ? 'Transcribing...' : 'Transcribe';
+            spinner.style.display = loading ? 'block' : 'none';
+            isTranscribing = loading;
+        }
+
+        // Upload audio file with progress
+        function uploadAudioFileWithProgress(file) {
+            return new Promise((resolve, reject) => {
+                const uploadUrl = `${API_BASE}/api/v1/s3/upload/${S3_BUCKET}?prefix=${AUDIO_PREFIX}`;
+                console.log('Audio Upload URL:', uploadUrl);
+                
+                addTranscriptionLog('log', `Upload URL: ${uploadUrl}`);
+                
+                const xhr = new XMLHttpRequest();
+                const formData = new FormData();
+                formData.append('file', file);
+
+                xhr.upload.addEventListener('progress', (event) => {
+                    if (event.lengthComputable) {
+                        const percent = Math.round((event.loaded / event.total) * 100);
+                        updateTranscriptionProgress(`Uploading (${percent}%)`, Math.round(percent * 0.3));
+                    }
+                });
+
+                xhr.addEventListener('load', () => {
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        try {
+                            const result = JSON.parse(xhr.responseText);
+                            resolve(result);
+                        } catch (e) {
+                            reject(new Error('Invalid response from server'));
+                        }
+                    } else {
+                        try {
+                            const error = JSON.parse(xhr.responseText);
+                            reject(new Error(error.detail || error.error || `Upload failed with status ${xhr.status}`));
+                        } catch (e) {
+                            reject(new Error(`Upload failed with status ${xhr.status}`));
+                        }
+                    }
+                });
+
+                xhr.addEventListener('error', () => {
+                    reject(new Error('Network error during upload.'));
+                });
+
+                xhr.timeout = 10 * 60 * 1000; // 10 minutes
+                xhr.open('POST', uploadUrl);
+                xhr.send(formData);
+            });
+        }
+
+        // Upload and transcribe
+        async function uploadAndTranscribe() {
+            if (!selectedAudioFile || isTranscribing) return;
+
+            document.getElementById('transcriptionProgressCard').style.display = 'block';
+            document.getElementById('transcriptionResult').style.display = 'none';
+            
+            clearTranscriptionLogs();
+            updateTranscriptionStatus('uploading', 'Uploading');
+            updateTranscriptionProgress('Uploading to S3', 0);
+            setTranscribeUploadButtonState(true);
+
+            try {
+                addTranscriptionLog('upload', `Uploading ${selectedAudioFile.name} (${formatFileSize(selectedAudioFile.size)}) to S3...`);
+                
+                const uploadResult = await uploadAudioFileWithProgress(selectedAudioFile);
+                
+                addTranscriptionLog('complete', `Audio uploaded: ${uploadResult.key}`);
+                updateTranscriptionProgress('Upload complete', 30);
+
+                const audioUrl = uploadResult.cdn_url || uploadResult.presigned_url;
+                
+                if (!audioUrl) {
+                    throw new Error('Failed to get audio URL after upload');
+                }
+
+                addTranscriptionLog('log', `Audio URL: ${audioUrl.substring(0, 80)}...`);
+                
+                await startTranscriptionWithUrl(audioUrl);
+
+            } catch (error) {
+                addTranscriptionLog('error', `Error: ${error.message}`);
+                updateTranscriptionStatus('error', 'Failed');
+                setTranscribeUploadButtonState(false);
+            }
+        }
+
+        // Start transcription from URL input
+        async function startTranscription() {
+            const audioUrl = document.getElementById('audioUrl').value.trim();
+            
+            if (!audioUrl) {
+                alert('Please enter an audio URL');
+                return;
+            }
+
+            if (!audioUrl.startsWith('http://') && !audioUrl.startsWith('https://')) {
+                alert('Please enter a valid URL starting with http:// or https://');
+                return;
+            }
+
+            document.getElementById('transcriptionProgressCard').style.display = 'block';
+            document.getElementById('transcriptionResult').style.display = 'none';
+            
+            clearTranscriptionLogs();
+            updateTranscriptionStatus('processing', 'Processing');
+            updateTranscriptionProgress('Starting', 0);
+            setTranscribeButtonState(true);
+
+            await startTranscriptionWithUrl(audioUrl);
+        }
+
+        async function startTranscriptionWithUrl(audioUrl) {
+            try {
+                updateTranscriptionStatus('processing', 'Transcribing');
+                
+                const response = await fetch(`${API_BASE}/api/v1/meeting-summary/audio-to-text`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        audio_url: audioUrl
+                    }),
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || error.detail || 'Failed to start transcription');
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop() || '';
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const data = line.slice(6).trim();
+                            
+                            if (data === '[DONE]') {
+                                continue;
+                            }
+                            
+                            try {
+                                const event = JSON.parse(data);
+                                handleTranscriptionEvent(event);
+                            } catch (e) {
+                                console.log('Non-JSON data:', data);
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                addTranscriptionLog('error', `Error: ${error.message}`);
+                updateTranscriptionStatus('error', 'Failed');
+                setTranscribeUploadButtonState(false);
+                setTranscribeButtonState(false);
+            }
+        }
+
+        function handleTranscriptionEvent(event) {
+            const type = event.event || 'log';
+            const message = event.message || JSON.stringify(event);
+            const progress = event.progress || 0;
+            
+            switch (type) {
+                case 'started':
+                    addTranscriptionLog('start', message);
+                    updateTranscriptionProgress('Starting', progress);
+                    break;
+                    
+                case 'progress':
+                    addTranscriptionLog('progress', message);
+                    const step = event.step || 'processing';
+                    updateTranscriptionProgress(step.charAt(0).toUpperCase() + step.slice(1), progress);
+                    break;
+                    
+                case 'completed':
+                    addTranscriptionLog('complete', message);
+                    updateTranscriptionProgress('Complete', 100);
+                    updateTranscriptionStatus('success', 'Complete');
+                    showTranscriptionResult(event);
+                    setTranscribeUploadButtonState(false);
+                    setTranscribeButtonState(false);
+                    break;
+                    
+                case 'error':
+                    addTranscriptionLog('error', message);
+                    updateTranscriptionStatus('error', 'Failed');
+                    setTranscribeUploadButtonState(false);
+                    setTranscribeButtonState(false);
+                    break;
+                    
+                default:
+                    addTranscriptionLog('log', message);
+            }
+        }
+
+        function showTranscriptionResult(data) {
+            transcribedText = data.text || '';
+            
+            document.getElementById('transcriptionText').textContent = transcribedText;
+            document.getElementById('metaWordCount').textContent = data.word_count || '--';
+            document.getElementById('metaLanguage').textContent = data.language || 'Auto-detected';
+            document.getElementById('metaTranscriptionTime').textContent = data.processing_time_seconds ? data.processing_time_seconds + 's' : '--';
+            
+            document.getElementById('transcriptionResult').style.display = 'block';
+        }
+
+        function copyTranscription() {
+            if (!transcribedText) return;
+            
+            navigator.clipboard.writeText(transcribedText).then(() => {
+                const btn = event.target.closest('button');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Copied!';
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                }, 2000);
+            });
+        }
+
+        function downloadTranscription() {
+            if (!transcribedText) return;
+            
+            const blob = new Blob([transcribedText], { type: 'text/plain;charset=utf-8' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'transcription_' + new Date().toISOString().slice(0, 10) + '.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Enter key to submit (Audio URL tab)
+        document.getElementById('audioUrl').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !isTranscribing) {
+                startTranscription();
+            }
+        });
+
+        // ==================== SUMMARY FUNCTIONS ====================
+
+        function selectSummaryType(type) {
+            selectedSummaryType = type;
+            document.getElementById('briefSummaryBtn').classList.remove('active');
+            document.getElementById('detailedSummaryBtn').classList.remove('active');
+            
+            if (type === 'brief') {
+                document.getElementById('briefSummaryBtn').classList.add('active');
+            } else {
+                document.getElementById('detailedSummaryBtn').classList.add('active');
+            }
+        }
+
+        function setSummarizeButtonState(loading) {
+            const btn = document.getElementById('summarizeBtn');
+            const text = document.getElementById('summarizeBtnText');
+            const spinner = document.getElementById('summarizeBtnSpinner');
+            
+            btn.disabled = loading;
+            text.textContent = loading ? 'Generating...' : 'Generate Summary';
+            spinner.style.display = loading ? 'block' : 'none';
+            isSummarizing = loading;
+        }
+
+        function updateSummaryStatus(status, text) {
+            const badge = document.getElementById('summaryStatusBadge');
+            badge.className = `status ${status}`;
+            document.getElementById('summaryStatusText').textContent = text;
+        }
+
+        async function startSummarization() {
+            const transcript = document.getElementById('transcriptInput').value.trim();
+            
+            if (!transcript) {
+                alert('Please paste a meeting transcript first.');
+                return;
+            }
+
+            if (transcript.length < 50) {
+                alert('Transcript is too short. Please provide a more detailed transcript.');
+                return;
+            }
+
+            // Show result card
+            document.getElementById('summaryResultCard').style.display = 'block';
+            document.getElementById('summaryText').textContent = '';
+            document.getElementById('summaryMeta').style.display = 'none';
+            document.getElementById('summaryActions').style.display = 'none';
+            document.getElementById('summaryResult').style.borderColor = 'var(--border-color)';
+            
+            updateSummaryStatus('processing', 'Generating');
+            setSummarizeButtonState(true);
+            summaryText = '';
+
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/meeting-summary/transcript-summary`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        transcript: transcript,
+                        type: selectedSummaryType
+                    }),
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || error.detail || 'Failed to generate summary');
+                }
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let buffer = '';
+
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+
+                    buffer += decoder.decode(value, { stream: true });
+                    const lines = buffer.split('\n');
+                    buffer = lines.pop() || '';
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const data = line.slice(6).trim();
+                            
+                            if (data === '[DONE]') {
+                                continue;
+                            }
+                            
+                            try {
+                                const event = JSON.parse(data);
+                                handleSummaryEvent(event);
+                            } catch (e) {
+                                console.log('Non-JSON data:', data);
+                            }
+                        }
+                    }
+                }
+
+                // Mark as complete if we have summary text
+                if (summaryText) {
+                    updateSummaryStatus('success', 'Complete');
+                    document.getElementById('summaryResult').style.borderColor = 'var(--success-color)';
+                    document.getElementById('summaryMeta').style.display = 'grid';
+                    document.getElementById('summaryActions').style.display = 'flex';
+                    document.getElementById('metaSummaryType').textContent = selectedSummaryType.charAt(0).toUpperCase() + selectedSummaryType.slice(1);
+                    document.getElementById('metaSummaryWords').textContent = summaryText.split(/\s+/).length;
+                }
+
+            } catch (error) {
+                document.getElementById('summaryText').textContent = 'Error: ' + error.message;
+                updateSummaryStatus('error', 'Failed');
+                document.getElementById('summaryResult').style.borderColor = 'var(--error-color)';
+            } finally {
+                setSummarizeButtonState(false);
+            }
+        }
+
+        function handleSummaryEvent(event) {
+            if (event.success === false) {
+                document.getElementById('summaryText').textContent = 'Error: ' + (event.error || 'Unknown error');
+                updateSummaryStatus('error', 'Failed');
+                document.getElementById('summaryResult').style.borderColor = 'var(--error-color)';
+                return;
+            }
+
+            if (event.type === 'meeting_summary') {
+                if (event.content) {
+                    summaryText += event.content;
+                    document.getElementById('summaryText').textContent = summaryText;
+                    // Auto-scroll to bottom
+                    const container = document.getElementById('summaryText');
+                    container.scrollTop = container.scrollHeight;
+                }
+                
+                if (event.completed) {
+                    updateSummaryStatus('success', 'Complete');
+                    document.getElementById('summaryResult').style.borderColor = 'var(--success-color)';
+                    document.getElementById('summaryMeta').style.display = 'grid';
+                    document.getElementById('summaryActions').style.display = 'flex';
+                    document.getElementById('metaSummaryType').textContent = selectedSummaryType.charAt(0).toUpperCase() + selectedSummaryType.slice(1);
+                    document.getElementById('metaSummaryWords').textContent = summaryText.split(/\s+/).length;
+                }
+            }
+        }
+
+        function copySummary() {
+            if (!summaryText) return;
+            
+            navigator.clipboard.writeText(summaryText).then(() => {
+                const btn = event.target.closest('button');
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Copied!';
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                }, 2000);
+            });
+        }
+
+        function downloadSummary() {
+            if (!summaryText) return;
+            
+            const blob = new Blob([summaryText], { type: 'text/plain;charset=utf-8' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'meeting_summary_' + new Date().toISOString().slice(0, 10) + '.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>

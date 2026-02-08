@@ -1,0 +1,248 @@
+{
+  "ara": {
+    "code": "ara",
+    "name_en": "Arabic",
+    "name_ar": "العربية"
+  },
+  "eng": {
+    "code": "eng",
+    "name_en": "English",
+    "name_ar": "الإنجليزية"
+  },
+  "fra": {
+    "code": "fra",
+    "name_en": "French",
+    "name_ar": "الفرنسية"
+  },
+  "deu": {
+    "code": "deu",
+    "name_en": "German",
+    "name_ar": "الألمانية"
+  },
+  "spa": {
+    "code": "spa",
+    "name_en": "Spanish",
+    "name_ar": "الإسبانية"
+  },
+  "ita": {
+    "code": "ita",
+    "name_en": "Italian",
+    "name_ar": "الإيطالية"
+  },
+  "por": {
+    "code": "por",
+    "name_en": "Portuguese",
+    "name_ar": "البرتغالية"
+  },
+  "rus": {
+    "code": "rus",
+    "name_en": "Russian",
+    "name_ar": "الروسية"
+  },
+  "zho": {
+    "code": "zho",
+    "name_en": "Chinese",
+    "name_ar": "الصينية"
+  },
+  "jpn": {
+    "code": "jpn",
+    "name_en": "Japanese",
+    "name_ar": "اليابانية"
+  },
+  "kor": {
+    "code": "kor",
+    "name_en": "Korean",
+    "name_ar": "الكورية"
+  },
+  "hin": {
+    "code": "hin",
+    "name_en": "Hindi",
+    "name_ar": "الهندية"
+  },
+  "urd": {
+    "code": "urd",
+    "name_en": "Urdu",
+    "name_ar": "الأردية"
+  },
+  "tur": {
+    "code": "tur",
+    "name_en": "Turkish",
+    "name_ar": "التركية"
+  },
+  "heb": {
+    "code": "heb",
+    "name_en": "Hebrew",
+    "name_ar": "العبرية"
+  },
+  "fas": {
+    "code": "fas",
+    "name_en": "Persian",
+    "name_ar": "الفارسية"
+  },
+  "pol": {
+    "code": "pol",
+    "name_en": "Polish",
+    "name_ar": "البولندية"
+  },
+  "nld": {
+    "code": "nld",
+    "name_en": "Dutch",
+    "name_ar": "الهولندية"
+  },
+  "swe": {
+    "code": "swe",
+    "name_en": "Swedish",
+    "name_ar": "السويدية"
+  },
+  "dan": {
+    "code": "dan",
+    "name_en": "Danish",
+    "name_ar": "الدنماركية"
+  },
+  "fin": {
+    "code": "fin",
+    "name_en": "Finnish",
+    "name_ar": "الفنلندية"
+  },
+  "nor": {
+    "code": "nor",
+    "name_en": "Norwegian",
+    "name_ar": "النرويجية"
+  },
+  "ell": {
+    "code": "ell",
+    "name_en": "Greek",
+    "name_ar": "اليونانية"
+  },
+  "ces": {
+    "code": "ces",
+    "name_en": "Czech",
+    "name_ar": "التشيكية"
+  },
+  "ron": {
+    "code": "ron",
+    "name_en": "Romanian",
+    "name_ar": "الرومانية"
+  },
+  "hun": {
+    "code": "hun",
+    "name_en": "Hungarian",
+    "name_ar": "المجرية"
+  },
+  "tha": {
+    "code": "tha",
+    "name_en": "Thai",
+    "name_ar": "التايلاندية"
+  },
+  "vie": {
+    "code": "vie",
+    "name_en": "Vietnamese",
+    "name_ar": "الفيتنامية"
+  },
+  "ind": {
+    "code": "ind",
+    "name_en": "Indonesian",
+    "name_ar": "الإندونيسية"
+  },
+  "msa": {
+    "code": "msa",
+    "name_en": "Malay",
+    "name_ar": "الماليزية"
+  },
+  "fil": {
+    "code": "fil",
+    "name_en": "Filipino",
+    "name_ar": "الفلبينية"
+  },
+  "ben": {
+    "code": "ben",
+    "name_en": "Bengali",
+    "name_ar": "البنغالية"
+  },
+  "tam": {
+    "code": "tam",
+    "name_en": "Tamil",
+    "name_ar": "التاميلية"
+  },
+  "tel": {
+    "code": "tel",
+    "name_en": "Telugu",
+    "name_ar": "التيلوغوية"
+  },
+  "mar": {
+    "code": "mar",
+    "name_en": "Marathi",
+    "name_ar": "الماراثية"
+  },
+  "guj": {
+    "code": "guj",
+    "name_en": "Gujarati",
+    "name_ar": "الغوجاراتية"
+  },
+  "kan": {
+    "code": "kan",
+    "name_en": "Kannada",
+    "name_ar": "الكانادا"
+  },
+  "mal": {
+    "code": "mal",
+    "name_en": "Malayalam",
+    "name_ar": "المالايالامية"
+  },
+  "pan": {
+    "code": "pan",
+    "name_en": "Punjabi",
+    "name_ar": "البنجابية"
+  },
+  "swh": {
+    "code": "swh",
+    "name_en": "Swahili",
+    "name_ar": "السواحيلية"
+  },
+  "ukr": {
+    "code": "ukr",
+    "name_en": "Ukrainian",
+    "name_ar": "الأوكرانية"
+  },
+  "bul": {
+    "code": "bul",
+    "name_en": "Bulgarian",
+    "name_ar": "البلغارية"
+  },
+  "srp": {
+    "code": "srp",
+    "name_en": "Serbian",
+    "name_ar": "الصربية"
+  },
+  "hrv": {
+    "code": "hrv",
+    "name_en": "Croatian",
+    "name_ar": "الكرواتية"
+  },
+  "slk": {
+    "code": "slk",
+    "name_en": "Slovak",
+    "name_ar": "السلوفاكية"
+  },
+  "slv": {
+    "code": "slv",
+    "name_en": "Slovenian",
+    "name_ar": "السلوفينية"
+  },
+  "lit": {
+    "code": "lit",
+    "name_en": "Lithuanian",
+    "name_ar": "الليتوانية"
+  },
+  "lav": {
+    "code": "lav",
+    "name_en": "Latvian",
+    "name_ar": "اللاتفية"
+  },
+  "est": {
+    "code": "est",
+    "name_en": "Estonian",
+    "name_ar": "الإستونية"
+  }
+}
+

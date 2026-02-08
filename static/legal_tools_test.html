@@ -1,0 +1,1764 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الأدوات القانونية - Legal Tools</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            color: white;
+            padding: 24px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 26px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            background: #eff6ff;
+            border-bottom: 2px solid #dbeafe;
+        }
+
+        .tab {
+            flex: 1;
+            min-width: 90px;
+            padding: 14px 8px;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            color: #3b82f6;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            background: #dbeafe;
+        }
+
+        .tab.active {
+            background: white;
+            color: #1e40af;
+            border-bottom: 3px solid #1e40af;
+            margin-bottom: -2px;
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 28px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 16px;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #1e40af;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dbeafe;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+            direction: rtl;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 140px;
+            line-height: 1.7;
+        }
+
+        textarea:focus, select:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+
+        button.primary-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button.primary-btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        button.primary-btn:disabled {
+            background: #93c5fd;
+            cursor: not-allowed;
+        }
+
+        .result-box {
+            margin-top: 24px;
+            padding: 20px;
+            background: #eff6ff;
+            border-radius: 6px;
+            border-right: 4px solid #3b82f6;
+            display: none;
+        }
+
+        .result-box.show {
+            display: block;
+        }
+
+        .result-box.success {
+            background: #f0fdf4;
+            border-right-color: #10b981;
+        }
+
+        .result-box.error {
+            background: #fef2f2;
+            border-right-color: #ef4444;
+        }
+
+        .result-title {
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #1e40af;
+            font-size: 15px;
+        }
+
+        .result-box.success .result-title {
+            color: #059669;
+        }
+
+        .result-box.error .result-title {
+            color: #dc2626;
+        }
+
+        .result-content {
+            color: #374151;
+            line-height: 1.9;
+            word-wrap: break-word;
+        }
+
+        /* Markdown Styles */
+        .result-content h2 {
+            color: #1e40af;
+            font-size: 18px;
+            font-weight: 700;
+            margin: 20px 0 12px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #dbeafe;
+        }
+
+        .result-content h3 {
+            color: #1e40af;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 16px 0 10px 0;
+        }
+
+        .result-content strong {
+            color: #1e40af;
+            font-weight: 600;
+        }
+
+        .result-content ul {
+            margin: 10px 0;
+            padding-right: 20px;
+        }
+
+        .result-content li {
+            margin: 6px 0;
+            line-height: 1.8;
+        }
+
+        .result-content p {
+            margin: 10px 0;
+        }
+
+        .info {
+            padding: 12px 16px;
+            background: #eff6ff;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #1e40af;
+            border-right: 3px solid #3b82f6;
+        }
+
+        .examples {
+            margin: 16px 0;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .examples strong {
+            color: #1e40af;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .example-btn {
+            display: inline-block;
+            margin: 4px;
+            padding: 8px 14px;
+            background: white;
+            border: 1px solid #3b82f6;
+            color: #3b82f6;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .example-btn:hover {
+            background: #3b82f6;
+            color: white;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ffffff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .tab.not-implemented {
+            position: relative;
+        }
+
+        .tab.not-implemented::after {
+            content: "قريباً";
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            font-size: 8px;
+            background: #ef4444;
+            color: white;
+            padding: 1px 4px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+
+        .not-implemented-banner {
+            background: #fef2f2;
+            border: 2px solid #ef4444;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .not-implemented-banner h3 {
+            color: #dc2626;
+            margin-bottom: 8px;
+        }
+
+        .not-implemented-banner p {
+            color: #7f1d1d;
+            font-size: 14px;
+        }
+
+        /* Comparison Table Styles */
+        .comparison-table-container {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+            color: white;
+            padding: 14px 12px;
+            text-align: right;
+            font-weight: 600;
+            font-size: 13px;
+            border: 1px solid #1e40af;
+        }
+
+        .comparison-table td {
+            padding: 12px;
+            border: 1px solid #dbeafe;
+            vertical-align: top;
+            line-height: 1.7;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: #f8fafc;
+        }
+
+        .comparison-table tr:hover {
+            background: #eff6ff;
+        }
+
+        .comparison-table .aspect-cell {
+            background: #eff6ff;
+            font-weight: 600;
+            color: #1e40af;
+            width: 100px;
+        }
+
+        .comparison-table .notes-cell {
+            background: #fef3c7;
+            color: #92400e;
+            font-size: 12px;
+        }
+
+        .conclusion-box {
+            margin-top: 24px;
+            padding: 20px;
+            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+            border-radius: 8px;
+            border-right: 4px solid #10b981;
+        }
+
+        .conclusion-box h4 {
+            color: #065f46;
+            margin-bottom: 12px;
+            font-size: 15px;
+        }
+
+        .conclusion-box p {
+            color: #064e3b;
+            line-height: 1.8;
+        }
+
+        .recommendation-box {
+            margin-top: 16px;
+            padding: 20px;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border-radius: 8px;
+            border-right: 4px solid #3b82f6;
+        }
+
+        .recommendation-box h4 {
+            color: #1e40af;
+            margin-bottom: 12px;
+            font-size: 15px;
+        }
+
+        .recommendation-box p {
+            color: #1e3a8a;
+            line-height: 1.8;
+        }
+
+        @media (max-width: 768px) {
+            .container { border-radius: 0; }
+            .tab { font-size: 11px; padding: 10px 4px; }
+            .tab-content { padding: 16px; }
+            .form-row { flex-direction: column; gap: 0; }
+            .tab.not-implemented::after { font-size: 6px; padding: 1px 2px; }
+            .comparison-table { font-size: 11px; }
+            .comparison-table th, .comparison-table td { padding: 8px 6px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>الأدوات القانونية الذكية</h1>
+            <p>Legal Tools - AI Assistant</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('memo')">مولد المذكرات</button>
+            <button class="tab" onclick="switchTab('judgment')">تحليل الأحكام</button>
+            <button class="tab" onclick="switchTab('petition')">صياغة الدعوى</button>
+            <button class="tab" onclick="switchTab('article')">شرح المواد</button>
+            <button class="tab" onclick="switchTab('summary')">ملخص قانوني</button>
+            <button class="tab" onclick="switchTab('comparison')">مقارنة الأحكام</button>
+            <button class="tab" onclick="switchTab('precedent')">باحث السوابق</button>
+            <button class="tab" onclick="switchTab('evaluation')">تقييم القضايا</button>
+            <button class="tab" onclick="switchTab('regulatory')">مستجدات الأنظمة</button>
+            <button class="tab" onclick="switchTab('grounds')">الإسناد القانوني</button>
+        </div>
+
+        <!-- Legal Memo Generator -->
+        <div id="memo-tab" class="tab-content active">
+            <div class="info">
+                مولد المذكرات القانونية - إعداد جميع أنواع المذكرات واللوائح القانونية وفق النظام السعودي
+            </div>
+
+            <div class="form-group">
+                <label>نوع المذكرة / اللائحة:</label>
+                <select id="memoType" onchange="updateMemoInfo()">
+                    <optgroup label="بدء الدعوى">
+                        <option value="claim">صحيفة دعوى</option>
+                    </optgroup>
+                    <optgroup label="أثناء الدعوى">
+                        <option value="response">مذكرة جوابية</option>
+                        <option value="procedural_defense">مذكرة دفوع شكلية</option>
+                        <option value="substantive_defense">مذكرة دفوع موضوعية</option>
+                        <option value="incidental_request">مذكرة طلب عارض</option>
+                        <option value="clarification">مذكرة إيضاحية</option>
+                        <option value="closing">مذكرة ختامية</option>
+                    </optgroup>
+                    <optgroup label="الطعن في الأحكام">
+                        <option value="appeal">لائحة اعتراض (استئناف)</option>
+                        <option value="cassation">لائحة اعتراض بطلب نقض</option>
+                        <option value="review_request">طلب إعادة نظر</option>
+                    </optgroup>
+                    <optgroup label="التنفيذ">
+                        <option value="execution_request">طلب تنفيذ</option>
+                        <option value="execution_review">التماس إعادة النظر في التنفيذ</option>
+                    </optgroup>
+                </select>
+            </div>
+
+            <div id="memoInfo" class="info" style="background: #f0fdf4; border-right-color: #10b981; display: none;">
+                <div id="memoInfoContent"></div>
+            </div>
+
+            <div class="form-group">
+                <label>وقائع القضية والمعلومات:</label>
+                <textarea id="memoText" placeholder="اكتب وقائع القضية وبيانات الأطراف والطلبات هنا..."></textarea>
+            </div>
+
+            <div class="examples">
+                <strong>أمثلة:</strong>
+                <span class="example-btn" onclick="setMemoExample1()">صحيفة دعوى تجارية</span>
+                <span class="example-btn" onclick="setMemoExample2()">مذكرة جوابية</span>
+                <span class="example-btn" onclick="setMemoExample3()">لائحة استئناف</span>
+                <span class="example-btn" onclick="setMemoExample4()">طلب تنفيذ</span>
+            </div>
+
+            <button class="primary-btn" id="memoBtn" onclick="generateMemo()">إنشاء المذكرة</button>
+            <div id="memoResult" class="result-box"></div>
+        </div>
+
+        <!-- Judgment Analysis -->
+        <div id="judgment-tab" class="tab-content">
+            <div class="info">
+                تحليل الأحكام القضائية - استخراج الوقائع والأسباب والمنطوق والقاعدة القانونية
+            </div>
+
+            <div class="form-group">
+                <label>نوع التحليل:</label>
+                <select id="analysisType">
+                    <option value="brief">مختصر</option>
+                    <option value="detailed">تحليلي مفصل</option>
+                    <option value="appeal_purpose">لأغراض الطعن</option>
+                    <option value="precedent">لاستخدامه كسابقة</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>نص الحكم:</label>
+                <textarea id="judgmentText" placeholder="الصق نص الحكم القضائي هنا..."></textarea>
+            </div>
+
+            <div class="examples">
+                <strong>أمثلة:</strong>
+                <span class="example-btn" onclick="setJudgmentExample1()">حكم تجاري</span>
+                <span class="example-btn" onclick="setJudgmentExample2()">حكم عمالي</span>
+            </div>
+
+            <button class="primary-btn" id="judgmentBtn" onclick="analyzeJudgment()">تحليل الحكم</button>
+            <div id="judgmentResult" class="result-box"></div>
+        </div>
+
+        <!-- Lawsuit Petition -->
+        <div id="petition-tab" class="tab-content">
+            <div class="info">
+                صياغة لائحة دعوى - إعداد لوائح دعوى بصياغة قانونية احترافية وفق الهيكل النظامي المعتمد
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>نوع الدعوى:</label>
+                    <select id="caseType">
+                        <option value="commercial">تجارية</option>
+                        <option value="civil">مدنية</option>
+                        <option value="administrative">إدارية</option>
+                        <option value="labor">عمالية</option>
+                        <option value="real_estate">عقارية</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>المحكمة المختصة:</label>
+                    <select id="courtType">
+                        <option value="commercial">المحكمة التجارية</option>
+                        <option value="moj">محاكم وزارة العدل</option>
+                        <option value="bog">ديوان المظالم</option>
+                        <option value="labor">محكمة العمال</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>وقائع الدعوى والطلبات:</label>
+                <textarea id="petitionText" placeholder="اكتب وقائع الدعوى وبيانات الأطراف والطلبات هنا..."></textarea>
+            </div>
+
+            <div class="examples">
+                <strong>أمثلة:</strong>
+                <span class="example-btn" onclick="setPetitionExample1()">دعوى توريد تجارية</span>
+                <span class="example-btn" onclick="setPetitionExample2()">دعوى عقارية</span>
+                <span class="example-btn" onclick="setPetitionExample3()">دعوى عمالية</span>
+            </div>
+
+            <button class="primary-btn" id="petitionBtn" onclick="draftPetition()">صياغة اللائحة</button>
+            <div id="petitionResult" class="result-box"></div>
+        </div>
+
+        <!-- Legal Article Explanation -->
+        <div id="article-tab" class="tab-content">
+            <div class="info">
+                شرح المواد القانونية - شرح وتبسيط النصوص النظامية مع بيان المقصود ونطاق التطبيق العملي
+            </div>
+
+            <div class="form-group">
+                <label>مستوى الشرح:</label>
+                <select id="explanationLevel">
+                    <option value="simple">مبسط - لغير المتخصصين</option>
+                    <option value="legal">قانوني - للمتخصصين</option>
+                    <option value="with_examples">مع أمثلة قضائية</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>المادة أو النص القانوني:</label>
+                <textarea id="articleText" placeholder="اكتب رقم المادة أو نص المادة القانونية أو اسم النظام..."></textarea>
+            </div>
+
+            <div class="examples">
+                <strong>أمثلة:</strong>
+                <span class="example-btn" onclick="setArticleExample1()">المادة 96 معاملات مدنية</span>
+                <span class="example-btn" onclick="setArticleExample2()">نظام الإثبات</span>
+                <span class="example-btn" onclick="setArticleExample3()">نظام العمل - الفصل</span>
+            </div>
+
+            <button class="primary-btn" id="articleBtn" onclick="explainArticle()">شرح المادة</button>
+            <div id="articleResult" class="result-box"></div>
+        </div>
+
+        <!-- Legal Summary -->
+        <div id="summary-tab" class="tab-content">
+            <div class="info">
+                ملخص قانوني - تلخيص ذكي للمستندات القانونية مع الحفاظ على أهم النقاط القانونية المؤثرة
+            </div>
+
+            <div class="form-group">
+                <label>نوع الملخص:</label>
+                <select id="summaryType">
+                    <option value="executive">ملخص تنفيذي - خلاصة سريعة لأخذ قرار</option>
+                    <option value="key_points">نقاط رئيسية - أهم النقاط والوقائع</option>
+                    <option value="for_memo">لاستخدامه في مذكرة - صياغة قانونية رسمية</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>النص القانوني:</label>
+                <textarea id="summaryText" placeholder="الصق النص القانوني المراد تلخيصه (عقد، حكم، لائحة، نظام...)"></textarea>
+            </div>
+
+            <div class="examples">
+                <strong>أمثلة:</strong>
+                <span class="example-btn" onclick="setSummaryExample()">عقد توريد</span>
+            </div>
+
+            <button class="primary-btn" id="summaryBtn" onclick="summarizeLegal()">إنشاء الملخص</button>
+            <div id="summaryResult" class="result-box"></div>
+        </div>
+
+        <!-- Judgment Comparison -->
+        <div id="comparison-tab" class="tab-content">
+            <div class="info">
+                مقارنة الأحكام القضائية - مقارنة منهجية بين حكمين أو أكثر لاستخراج الوقائع والتسبيب والمنطوق والقاعدة القانونية
+            </div>
+
+            <div class="form-group">
+                <label>معايير المقارنة:</label>
+                <select id="comparisonCriteria">
+                    <option value="all">الكل (مقارنة شاملة)</option>
+                    <option value="facts">الوقائع</option>
+                    <option value="reasoning">التسبيب</option>
+                    <option value="ruling">المنطوق</option>
+                    <option value="legal_principle">القاعدة القانونية</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>نصوص الأحكام (حكمين أو أكثر):</label>
+                <textarea id="comparisonText" placeholder="الصق نصوص الأحكام المراد مقارنتها هنا...
+
+مثال:
+=== الحكم الأول ===
+[نص الحكم الأول]
+
+=== الحكم الثاني ===
+[نص الحكم الثاني]" style="min-height: 200px;"></textarea>
+            </div>
+
+            <div class="examples">
+                <strong>أمثلة:</strong>
+                <span class="example-btn" onclick="setComparisonExample1()">مقارنة أحكام تجارية</span>
+                <span class="example-btn" onclick="setComparisonExample2()">مقارنة أحكام عمالية</span>
+            </div>
+
+            <button class="primary-btn" id="comparisonBtn" onclick="compareJudgments()">مقارنة الأحكام</button>
+            <div id="comparisonResult" class="result-box"></div>
+        </div>
+
+        <!-- Precedent Search -->
+        <div id="precedent-tab" class="tab-content">
+            <div class="info">
+                باحث السوابق القضائية - البحث عن سوابق قضائية مشابهة لدعم موقفك القانوني
+            </div>
+
+            <div class="form-group">
+                <label>نوع المحكمة:</label>
+                <select id="precedentCourt">
+                    <option value="all">جميع المحاكم</option>
+                    <option value="moj">وزارة العدل</option>
+                    <option value="bog">ديوان المظالم</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>وصف القضية أو موضوع البحث:</label>
+                <textarea id="precedentText" placeholder="صف القضية بإيجاز أو اكتب موضوع البحث...
+
+مثال: نزاع تجاري حول عقد توريد، تأخر المورد في التسليم لمدة 3 أشهر، نطالب بالتعويض عن الضرر المباشر"></textarea>
+            </div>
+
+            <div class="examples">
+                <strong>أمثلة:</strong>
+                <span class="example-btn" onclick="setPrecedentExample1()">إخلال تعاقدي</span>
+                <span class="example-btn" onclick="setPrecedentExample2()">فصل تعسفي</span>
+            </div>
+
+            <button class="primary-btn" id="precedentBtn" onclick="searchPrecedents()">بحث السوابق</button>
+            <div id="precedentResult" class="result-box"></div>
+        </div>
+
+        <!-- Case Evaluation -->
+        <div id="evaluation-tab" class="tab-content">
+            <div class="info">
+                تقييم القضايا - تحليل قوة القضية ونسبة النجاح والمخاطر المحتملة مع توصيات استراتيجية
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>نوع القضية:</label>
+                    <select id="evaluationCaseType">
+                        <option value="commercial">تجارية</option>
+                        <option value="general">عامة</option>
+                        <option value="labor">عمالية</option>
+                        <option value="administrative">إدارية</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>غرض التقييم:</label>
+                    <select id="evaluationPurpose">
+                        <option value="pre_filing">قبل رفع الدعوى</option>
+                        <option value="during_litigation">أثناء نظر الدعوى</option>
+                        <option value="pre_appeal">قبل الاستئناف</option>
+                        <option value="strategy_review">مراجعة استراتيجية</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>وقائع القضية والأدلة المتاحة:</label>
+                <textarea id="evaluationText" placeholder="صف وقائع القضية بإيجاز وأذكر الأدلة والمستندات المتاحة..."></textarea>
+            </div>
+
+            <div class="examples">
+                <strong>أمثلة:</strong>
+                <span class="example-btn" onclick="setEvaluationExample1()">قضية تجارية</span>
+                <span class="example-btn" onclick="setEvaluationExample2()">قضية عمالية</span>
+            </div>
+
+            <button class="primary-btn" id="evaluationBtn" onclick="evaluateCase()">تقييم القضية</button>
+            <div id="evaluationResult" class="result-box"></div>
+        </div>
+
+        <!-- Regulatory Updates -->
+        <div id="regulatory-tab" class="tab-content">
+            <div class="info">
+                مستجدات الأنظمة - متابعة التعديلات والتحديثات على الأنظمة واللوائح السعودية مع الأثر العملي
+            </div>
+
+            <div class="form-group">
+                <label>المجال القانوني:</label>
+                <select id="regulatoryDomain">
+                    <option value="commercial">تجاري</option>
+                    <option value="labor">عمالي</option>
+                    <option value="civil">مدني</option>
+                    <option value="criminal">جزائي</option>
+                    <option value="administrative">إداري</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>الموضوع أو النظام:</label>
+                <textarea id="regulatoryText" placeholder="اكتب الموضوع أو النظام المراد متابعة تحديثاته...
+
+مثال: نظام الشركات، نظام المعاملات المدنية، نظام العمل"></textarea>
+            </div>
+
+            <div class="examples">
+                <strong>أمثلة:</strong>
+                <span class="example-btn" onclick="setRegulatoryExample1()">نظام الشركات</span>
+                <span class="example-btn" onclick="setRegulatoryExample2()">نظام العمل</span>
+            </div>
+
+            <button class="primary-btn" id="regulatoryBtn" onclick="getRegulatoryUpdates()">عرض المستجدات</button>
+            <div id="regulatoryResult" class="result-box"></div>
+        </div>
+
+        <!-- Legal Grounds -->
+        <div id="grounds-tab" class="tab-content">
+            <div class="info">
+                الإسناد القانوني - ربط الوقائع بالنصوص النظامية والقواعد الفقهية والسوابق القضائية ذات الصلة
+            </div>
+
+            <div class="form-group">
+                <label>الوقائع أو المسألة القانونية:</label>
+                <textarea id="groundsText" placeholder="اكتب الوقائع أو المسألة القانونية المراد البحث عن أسانيدها...
+
+مثال: إخلال المورد بعقد التوريد وعدم تسليم البضاعة في الموعد المحدد رغم استلام الدفعة المقدمة" style="min-height: 150px;"></textarea>
+            </div>
+
+            <div class="examples">
+                <strong>أمثلة:</strong>
+                <span class="example-btn" onclick="setGroundsExample1()">إخلال تعاقدي</span>
+                <span class="example-btn" onclick="setGroundsExample2()">فصل تعسفي</span>
+            </div>
+
+            <button class="primary-btn" id="groundsBtn" onclick="findLegalGrounds()">استخراج الأسانيد</button>
+            <div id="groundsResult" class="result-box"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api/v1/legal-tools';
+
+        // Markdown Parser
+        function parseMarkdown(text) {
+            if (!text) return '';
+            
+            let html = text;
+            
+            // Escape HTML
+            html = html
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+            
+            // Headers ## and ###
+            html = html.replace(/^###\s+(.+)$/gm, '<h3>$1</h3>');
+            html = html.replace(/^##\s+(.+)$/gm, '<h2>$1</h2>');
+            
+            // Bold **text** or __text__
+            html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/__([^_]+)__/g, '<strong>$1</strong>');
+            
+            // Bullet points - at start of line
+            html = html.replace(/^[-•]\s+(.+)$/gm, '<li>$1</li>');
+            
+            // Wrap consecutive <li> in <ul>
+            html = html.replace(/(<li>.*<\/li>\n?)+/g, function(match) {
+                return '<ul>' + match + '</ul>';
+            });
+            
+            // Numbered lists
+            html = html.replace(/^\d+\.\s+(.+)$/gm, '<li>$1</li>');
+            
+            // Line breaks
+            html = html.replace(/\n\n/g, '</p><p>');
+            html = html.replace(/\n/g, '<br>');
+            
+            // Clean up
+            html = html.replace(/<\/h([23])><br>/g, '</h$1>');
+            html = html.replace(/<\/li><br>/g, '</li>');
+            html = html.replace(/<\/ul><br>/g, '</ul>');
+            html = html.replace(/<br><ul>/g, '<ul>');
+            html = html.replace(/<br><h/g, '<h');
+            
+            // Wrap in paragraph if not starting with tag
+            if (!html.startsWith('<')) {
+                html = '<p>' + html + '</p>';
+            }
+            
+            return html;
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Memo type metadata
+        const MEMO_TYPES_INFO = {
+            claim: { purpose: "إنشاء الخصومة القضائية نظامًا وفتح ملف القضية رسميًا", legal_basis: "مرافعات شرعية م41-45", time_limit: "لا يوجد", stage: "بدء الدعوى" },
+            response: { purpose: "تمكين الخصم من الدفاع وإبداء موقفه النظامي", legal_basis: "م57", time_limit: "يحددها القاضي", stage: "بعد القيد" },
+            procedural_defense: { purpose: "إسقاط الدعوى قبل بحث أصل الحق", legal_basis: "م76-84", time_limit: "قبل الموضوع", stage: "أول الجلسات" },
+            substantive_defense: { purpose: "نفي الحق المدعى به أو إثبات العكس", legal_basis: "قواعد الإثبات", time_limit: "مفتوحة", stage: "أثناء السير" },
+            incidental_request: { purpose: "تعديل مسار الدعوى أو توسيع نطاقها", legal_basis: "م80-82", time_limit: "أثناء السير", stage: "أثناء الدعوى" },
+            clarification: { purpose: "إزالة غموض أو نقص أشار له القاضي", legal_basis: "سلطة القاضي", time_limit: "حسب الطلب", stage: "أثناء الدعوى" },
+            closing: { purpose: "تثبيت الصورة النهائية للنزاع قبل الحكم", legal_basis: "إدارة الدعوى", time_limit: "قبل الحكم", stage: "نهاية المرافعة" },
+            appeal: { purpose: "إعادة طرح النزاع أمام محكمة أعلى", legal_basis: "م187-193", time_limit: "30 يوم", stage: "بعد الحكم الابتدائي" },
+            cassation: { purpose: "مراقبة صحة تطبيق النظام لا إعادة النزاع", legal_basis: "م193-201", time_limit: "30 يوم", stage: "بعد الاستئناف" },
+            review_request: { purpose: "فتح حكم نهائي لسبب استثنائي", legal_basis: "م200-206", time_limit: "30 يوم من العلم", stage: "بعد القطعية" },
+            execution_request: { purpose: "تحويل الحكم من ورق إلى واقع", legal_basis: "نظام التنفيذ", time_limit: "لا يوجد", stage: "بعد الحكم النهائي" },
+            execution_review: { purpose: "وقف أو تصحيح إجراءات التنفيذ مؤقتًا", legal_basis: "نظام التنفيذ", time_limit: "حسب الحالة", stage: "مرحلة التنفيذ" }
+        };
+
+        function updateMemoInfo() {
+            const type = document.getElementById('memoType').value;
+            const info = MEMO_TYPES_INFO[type];
+            const infoBox = document.getElementById('memoInfo');
+            const infoContent = document.getElementById('memoInfoContent');
+            
+            if (info) {
+                infoContent.innerHTML = `
+                    <strong>الهدف:</strong> ${info.purpose}<br>
+                    <strong>الأساس النظامي:</strong> ${info.legal_basis} | 
+                    <strong>المدة:</strong> ${info.time_limit} | 
+                    <strong>المرحلة:</strong> ${info.stage}
+                `;
+                infoBox.style.display = 'block';
+            } else {
+                infoBox.style.display = 'none';
+            }
+        }
+
+        // Example setters - Memo
+        function setMemoExample1() {
+            document.getElementById('memoType').value = 'claim';
+            updateMemoInfo();
+            document.getElementById('memoText').value = `المدعي: شركة التوريدات التجارية المحدودة، سجل تجاري رقم 1010XXXXX
+المدعى عليه: شركة البناء والتعمير، سجل تجاري رقم 1010XXXXX
+
+أبرمت شركتنا عقد توريد مواد بناء بقيمة 2,000,000 ريال بتاريخ 1444/03/15هـ.
+التزم المدعى عليه بتوريد المواد خلال 60 يوماً. انقضت المدة دون تنفيذ الالتزام رغم المطالبات المتكررة.
+
+الطلبات:
+1. إلزام المدعى عليه بتنفيذ العقد
+2. دفع غرامة التأخير المنصوص عليها (1% عن كل أسبوع)
+3. أتعاب المحاماة والمصاريف`;
+        }
+
+        function setMemoExample2() {
+            document.getElementById('memoType').value = 'response';
+            updateMemoInfo();
+            document.getElementById('memoText').value = `رداً على الدعوى المقيدة برقم 12345/1445هـ المقدمة من المدعي ضد موكلي:
+
+نفيد بأن البضاعة المسلّمة كانت مطابقة للمواصفات المتفق عليها في العقد.
+المدعي استلم البضاعة ووقع على إيصال الاستلام بتاريخ 1444/05/20هـ دون تحفظ.
+تأخر المدعي في السداد لمدة 4 أشهر مما سبب ضرراً لموكلي.
+
+الدفوع:
+1. عدم صحة الادعاء بعيب البضاعة
+2. سقوط حق الرجوع لعدم الإخطار خلال المدة النظامية
+3. طلب رفض الدعوى وإلزام المدعي بالمصاريف`;
+        }
+
+        function setMemoExample3() {
+            document.getElementById('memoType').value = 'appeal';
+            updateMemoInfo();
+            document.getElementById('memoText').value = `الحكم المستأنف: صادر من الدائرة التجارية الأولى برقم 5678/1445هـ بتاريخ 1445/08/15هـ
+قضى بإلزام موكلي بدفع مبلغ 500,000 ريال للمستأنف ضده
+
+أسباب الاستئناف:
+1. الخطأ في تطبيق المادة 96 من نظام المعاملات المدنية - لم تتحقق الدائرة من توفر شروط الإخلال
+2. القصور في التسبيب - لم تناقش الدائرة دفاعنا بشأن المستندات المقدمة
+3. الإخلال بحق الدفاع - رفضت الدائرة طلبنا بندب خبير فني
+
+الطلبات:
+1. قبول الاستئناف شكلاً
+2. إلغاء الحكم المستأنف والقضاء برفض الدعوى`;
+        }
+
+        function setMemoExample4() {
+            document.getElementById('memoType').value = 'execution_request';
+            updateMemoInfo();
+            document.getElementById('memoText').value = `السند التنفيذي: حكم صادر من المحكمة التجارية برقم 9999/1445هـ
+تاريخ اكتساب الحكم القطعية: 1445/10/01هـ
+
+المحكوم له: شركة الأعمال التجارية
+المحكوم عليه: مؤسسة التجارة والمقاولات
+
+منطوق الحكم: إلزام المحكوم عليه بدفع مبلغ 750,000 ريال للمحكوم له
+
+المطلوب:
+1. التنفيذ على أموال المحكوم عليه
+2. حجز ما يكفي لسداد المبلغ المحكوم به
+3. إلزام المحكوم عليه بالمصاريف التنفيذية`;
+        }
+
+        // Example setters - Judgment
+        function setJudgmentExample1() {
+            document.getElementById('judgmentText').value = `حكم رقم 12345/ت/1444هـ صادر من المحكمة التجارية بالرياض.
+
+في قضية مطالبة بتعويض عن إخلال تعاقدي، قضت الدائرة بإلزام المدعى عليه بدفع مبلغ 500,000 ريال تعويضاً عن الأضرار المباشرة الناجمة عن عدم تنفيذ عقد التوريد.
+
+استندت الدائرة للمادة 96 من نظام المعاملات المدنية التي تنص على التزام المتعاقد بتنفيذ العقد وفقاً لمضمونه.`;
+        }
+
+        function setJudgmentExample2() {
+            document.getElementById('judgmentText').value = `حكم المحكمة العمالية رقم 5678/ع/1445هـ.
+
+حكمت الدائرة بإلزام صاحب العمل بدفع مستحقات نهاية الخدمة للعامل بمبلغ 120,000 ريال مع تعويض عن الفصل التعسفي بأجر شهرين.
+
+ثبت للدائرة أن الفصل تم دون إنذار وبدون مبرر مشروع وفقاً للمادة 77 من نظام العمل.`;
+        }
+
+        // Example setters - Petition
+        function setPetitionExample1() {
+            document.getElementById('petitionText').value = `المدعي: شركة التوريدات التجارية المحدودة، سجل تجاري رقم 1010XXXXX
+المدعى عليه: شركة البناء والتعمير، سجل تجاري رقم 1010XXXXX
+
+أبرمت شركتنا عقد توريد مواد بناء بقيمة 2,000,000 ريال بتاريخ 1444/03/15هـ.
+
+التزم المدعى عليه بتوريد المواد خلال 60 يوماً من تاريخ العقد. انقضت المدة دون تنفيذ الالتزام رغم المطالبات المتكررة والإنذارات الرسمية.
+
+الطلبات:
+1. إلزام المدعى عليه بتنفيذ العقد وتوريد المواد المتفق عليها
+2. دفع غرامة التأخير المنصوص عليها في العقد (1% عن كل أسبوع)
+3. تحميل المدعى عليه أتعاب المحاماة والمصاريف القضائية`;
+            document.getElementById('caseType').value = 'commercial';
+            document.getElementById('courtType').value = 'commercial';
+        }
+
+        function setPetitionExample2() {
+            document.getElementById('petitionText').value = `المدعي: محمد أحمد العلي، هوية رقم 10XXXXXXXX
+المدعى عليه: خالد سعد المالك، هوية رقم 10XXXXXXXX
+
+بتاريخ 1445/01/01هـ أبرمت عقد بيع عقار (شقة سكنية) مع المدعى عليه بمبلغ 1,500,000 ريال.
+
+سددت كامل الثمن بموجب شيكات مصرفية (مرفق صور الشيكات وكشف الحساب).
+
+إلا أن المدعى عليه امتنع عن تسليم العقار ونقل الملكية رغم استلامه كامل الثمن.
+
+الطلبات:
+1. إلزام المدعى عليه بتسليم العقار ونقل الملكية
+2. أو في حال تعذر التسليم: رد كامل الثمن مع التعويض عن الأضرار`;
+            document.getElementById('caseType').value = 'real_estate';
+            document.getElementById('courtType').value = 'moj';
+        }
+
+        function setPetitionExample3() {
+            document.getElementById('petitionText').value = `المدعي: عبدالله محمد السالم، هوية رقم 10XXXXXXXX، كان يعمل لدى المدعى عليها
+المدعى عليها: شركة التقنية المتقدمة، سجل تجاري رقم 1010XXXXX
+
+عملت لدى المدعى عليها منذ تاريخ 1440/06/01هـ بوظيفة مهندس برمجيات براتب شهري 25,000 ريال.
+
+بتاريخ 1445/10/15هـ تم إنهاء خدماتي دون سابق إنذار ودون مبرر مشروع.
+
+لم تصرف لي المدعى عليها مستحقاتي التالية:
+- راتب آخر شهرين
+- بدل الإجازة المستحقة (45 يوماً)
+- مكافأة نهاية الخدمة
+
+الطلبات:
+1. تعويض عن الفصل التعسفي (أجر شهرين)
+2. رواتب الشهرين المتأخرة
+3. بدل الإجازة المستحقة
+4. مكافأة نهاية الخدمة كاملة`;
+            document.getElementById('caseType').value = 'labor';
+            document.getElementById('courtType').value = 'labor';
+        }
+
+        // Example setters - Article
+        function setArticleExample1() {
+            document.getElementById('articleText').value = `المادة 96 من نظام المعاملات المدنية:
+
+"يجب تنفيذ العقد طبقاً لما اشتمل عليه وبما يوجبه حسن النية. ولا يقتصر العقد على إلزام المتعاقد بما ورد فيه فحسب، بل يتناول أيضاً ما هو من مستلزماته وفقاً للنظام والعرف وطبيعة التصرف."`;
+        }
+
+        function setArticleExample2() {
+            document.getElementById('articleText').value = `نظام الإثبات - المادة 108:
+
+اشرح لي أحكام الشهادة في المسائل التجارية وشروط قبولها وحالات ردها.`;
+        }
+
+        function setArticleExample3() {
+            document.getElementById('articleText').value = `نظام العمل - المادة 77:
+
+"إذا أنهي العقد لسبب غير مشروع كان للطرف الذي أصابه ضرر من هذا الإنهاء الحق في تعويض تقدره هيئة تسوية الخلافات العمالية..."
+
+ما هي الحالات التي يعتبر فيها الفصل تعسفياً؟ وكيف يتم احتساب التعويض؟`;
+        }
+
+        // Example setters - Summary
+        function setSummaryExample() {
+            document.getElementById('summaryText').value = `عقد توريد مواد بناء مبرم بين الطرف الأول (المورد) والطرف الثاني (المشتري).
+
+المادة الأولى: يلتزم الطرف الأول بتوريد كميات من الحديد والأسمنت وفق المواصات المرفقة.
+المادة الثانية: يلتزم الطرف الثاني بسداد الثمن على ثلاث دفعات.
+المادة الثالثة: مدة التوريد 90 يوماً من تاريخ الدفعة الأولى.
+المادة الرابعة: غرامة التأخير 1% عن كل أسبوع تأخير بحد أقصى 10%.
+المادة الخامسة: تختص المحكمة التجارية بالرياض بنظر أي نزاع.
+المادة السادسة: يسري العقد من تاريخ التوقيع لمدة سنة قابلة للتجديد.`;
+        }
+
+        // Example setters - Comparison
+        function setComparisonExample1() {
+            document.getElementById('comparisonText').value = `=== الحكم الأول ===
+حكم رقم 12345/ت/1444هـ صادر من المحكمة التجارية بالرياض
+
+في قضية مطالبة بتعويض عن إخلال تعاقدي، قضت الدائرة بإلزام المدعى عليه بدفع مبلغ 500,000 ريال تعويضاً عن الأضرار المباشرة الناجمة عن عدم تنفيذ عقد التوريد.
+
+الوقائع: أبرم المدعي عقد توريد مع المدعى عليه لتوريد مواد بناء بقيمة 2 مليون ريال، التزم فيه المدعى عليه بالتوريد خلال 60 يوماً. انقضت المدة دون تنفيذ رغم الإنذارات.
+
+التسبيب: استندت الدائرة للمادة 96 من نظام المعاملات المدنية التي تنص على التزام المتعاقد بتنفيذ العقد وفقاً لمضمونه. ثبت للدائرة وجود عقد صحيح وإخلال من المدعى عليه.
+
+المنطوق: إلزام المدعى عليه بدفع 500,000 ريال تعويضاً وأتعاب المحاماة.
+
+=== الحكم الثاني ===
+حكم رقم 67890/ت/1445هـ صادر من المحكمة التجارية بجدة
+
+في قضية مماثلة تتعلق بعقد توريد، قضت الدائرة برفض طلب التعويض.
+
+الوقائع: أبرم المدعي عقد توريد مع المدعى عليه لتوريد أجهزة إلكترونية بقيمة 1.5 مليون ريال. تأخر المدعى عليه في التوريد لمدة 3 أشهر.
+
+التسبيب: رأت الدائرة أن التأخير كان بسبب قوة قاهرة (جائحة كورونا) وفقاً للمادة 92 من نظام المعاملات المدنية. كما لم يثبت المدعي وجود ضرر فعلي.
+
+المنطوق: رفض الدعوى وإلزام المدعي بالمصاريف.`;
+        }
+
+        function setComparisonExample2() {
+            document.getElementById('comparisonText').value = `=== الحكم الأول ===
+حكم المحكمة العمالية رقم 1111/ع/1444هـ
+
+قضت المحكمة بإلزام صاحب العمل بدفع تعويض للعامل عن الفصل التعسفي.
+
+الوقائع: عمل المدعي لدى الشركة المدعى عليها مدة 5 سنوات براتب 15,000 ريال شهرياً. تم إنهاء خدماته بشكل مفاجئ دون إنذار مسبق.
+
+التسبيب: ثبت للمحكمة أن الفصل تم دون مبرر مشروع وفقاً للمادة 77 من نظام العمل، ولم تقدم الشركة ما يثبت وجود سبب مشروع للفصل.
+
+المنطوق: إلزام الشركة بدفع أجر شهرين تعويضاً + مكافأة نهاية الخدمة كاملة.
+
+=== الحكم الثاني ===
+حكم المحكمة العمالية رقم 2222/ع/1445هـ
+
+قضت المحكمة برفض دعوى العامل المتعلقة بالفصل التعسفي.
+
+الوقائع: عمل المدعي لدى المؤسسة المدعى عليها مدة 3 سنوات براتب 12,000 ريال. تم إنهاء خدماته بعد تقديم 3 إنذارات كتابية بسبب تكرار الغياب.
+
+التسبيب: رأت المحكمة أن صاحب العمل اتبع الإجراءات النظامية وفقاً للمادة 80 من نظام العمل، وأن الغياب المتكرر يشكل سبباً مشروعاً للفصل.
+
+المنطوق: رفض الدعوى مع احتساب مكافأة نهاية الخدمة فقط.`;
+        }
+
+        // API calls with streaming and markdown parsing
+        async function streamRequest(endpoint, body, resultBox, btn, originalText) {
+            btn.disabled = true;
+            btn.innerHTML = `<span class="loading"></span> جاري المعالجة...`;
+            resultBox.className = 'result-box show';
+            resultBox.innerHTML = '<div class="result-title">جاري المعالجة...</div><div class="result-content"></div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/${endpoint}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(body)
+                });
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let text = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value);
+                    const lines = chunk.split('\n');
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const data = line.slice(6);
+                            if (data === '[DONE]') break;
+
+                            try {
+                                const json = JSON.parse(data);
+                                if (json.content) {
+                                    text += json.content;
+                                    // Parse markdown and render as HTML
+                                    resultBox.querySelector('.result-content').innerHTML = parseMarkdown(text);
+                                }
+                                if (json.error) {
+                                    throw new Error(json.error);
+                                }
+                            } catch (e) {
+                                if (e.message && !e.message.includes('JSON')) throw e;
+                            }
+                        }
+                    }
+                }
+
+                if (text) {
+                    resultBox.className = 'result-box show success';
+                    resultBox.querySelector('.result-title').textContent = 'تم بنجاح';
+                }
+            } catch (error) {
+                resultBox.className = 'result-box show error';
+                resultBox.innerHTML = `<div class="result-title">خطأ</div><div class="result-content">${error.message}</div>`;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+
+        async function generateMemo() {
+            const text = document.getElementById('memoText').value.trim();
+            const memoType = document.getElementById('memoType').value;
+            if (!text) { alert('الرجاء إدخال وقائع القضية'); return; }
+            
+            await streamRequest('legal-memo-generator', { text, memo_type: memoType },
+                document.getElementById('memoResult'),
+                document.getElementById('memoBtn'),
+                'إنشاء المذكرة');
+        }
+
+        async function analyzeJudgment() {
+            const text = document.getElementById('judgmentText').value.trim();
+            const analysisType = document.getElementById('analysisType').value;
+            if (!text) { alert('الرجاء إدخال نص الحكم'); return; }
+            
+            await streamRequest('judgment-analysis', { text, analysis_type: analysisType },
+                document.getElementById('judgmentResult'),
+                document.getElementById('judgmentBtn'),
+                'تحليل الحكم');
+        }
+
+        async function draftPetition() {
+            const text = document.getElementById('petitionText').value.trim();
+            const caseType = document.getElementById('caseType').value;
+            const court = document.getElementById('courtType').value;
+            if (!text) { alert('الرجاء إدخال وقائع الدعوى'); return; }
+            
+            await streamRequest('lawsuit-petition-draft', { text, case_type: caseType, court: court },
+                document.getElementById('petitionResult'),
+                document.getElementById('petitionBtn'),
+                'صياغة اللائحة');
+        }
+
+        async function explainArticle() {
+            const text = document.getElementById('articleText').value.trim();
+            const explanationLevel = document.getElementById('explanationLevel').value;
+            if (!text) { alert('الرجاء إدخال المادة القانونية'); return; }
+            
+            await streamRequest('legal-article-explanation', { text, explanation_level: explanationLevel },
+                document.getElementById('articleResult'),
+                document.getElementById('articleBtn'),
+                'شرح المادة');
+        }
+
+        // Legal Summary (JSON response)
+        async function summarizeLegal() {
+            const text = document.getElementById('summaryText').value.trim();
+            const summaryType = document.getElementById('summaryType').value;
+            const resultBox = document.getElementById('summaryResult');
+            const btn = document.getElementById('summaryBtn');
+            
+            if (!text) { alert('الرجاء إدخال النص القانوني'); return; }
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> جاري التلخيص...';
+            resultBox.className = 'result-box show';
+            resultBox.innerHTML = '<div class="result-title">جاري تلخيص المستند...</div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/legal-summary`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text, summary_type: summaryType })
+                });
+                const data = await response.json();
+                if (!data.success) throw new Error(data.error || 'حدث خطأ');
+                resultBox.className = 'result-box show success';
+                resultBox.innerHTML = renderSummaryResult(data);
+            } catch (error) {
+                resultBox.className = 'result-box show error';
+                resultBox.innerHTML = `<div class="result-title">خطأ</div><div class="result-content">${error.message}</div>`;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'إنشاء الملخص';
+            }
+        }
+
+        function renderSummaryResult(data) {
+            let html = '<div class="result-title">الملخص القانوني</div><div class="result-content">';
+            if (data.document_title) html += `<p><strong>المستند:</strong> ${escapeHtml(data.document_title)}</p>`;
+            if (data.main_summary) html += `<h3>الملخص</h3><p>${escapeHtml(data.main_summary)}</p>`;
+            if (data.key_points && data.key_points.length > 0) {
+                html += '<h3>النقاط الرئيسية</h3><ul>';
+                data.key_points.forEach(p => html += `<li>${escapeHtml(p)}</li>`);
+                html += '</ul>';
+            }
+            if (data.legal_references && data.legal_references.length > 0) {
+                html += '<h3>المراجع النظامية</h3><ul>';
+                data.legal_references.forEach(r => html += `<li>${escapeHtml(r)}</li>`);
+                html += '</ul>';
+            }
+            if (data.recommendations) html += `<div class="recommendation-box"><h4>التوصيات</h4><p>${escapeHtml(data.recommendations)}</p></div>`;
+            html += '</div>';
+            return html;
+        }
+
+        // Precedent Search (JSON response)
+        async function searchPrecedents() {
+            const text = document.getElementById('precedentText').value.trim();
+            const courtType = document.getElementById('precedentCourt').value;
+            const resultBox = document.getElementById('precedentResult');
+            const btn = document.getElementById('precedentBtn');
+            
+            if (!text) { alert('الرجاء إدخال وصف القضية'); return; }
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> جاري البحث...';
+            resultBox.className = 'result-box show';
+            resultBox.innerHTML = '<div class="result-title">جاري البحث عن السوابق...</div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/precedent-search`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text, court_type: courtType })
+                });
+                const data = await response.json();
+                if (!data.success) throw new Error(data.error || 'حدث خطأ');
+                resultBox.className = 'result-box show success';
+                resultBox.innerHTML = renderPrecedentResult(data);
+            } catch (error) {
+                resultBox.className = 'result-box show error';
+                resultBox.innerHTML = `<div class="result-title">خطأ</div><div class="result-content">${error.message}</div>`;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'بحث السوابق';
+            }
+        }
+
+        function renderPrecedentResult(data) {
+            let html = '<div class="result-title">نتائج البحث</div><div class="result-content">';
+            html += `<p><strong>عدد النتائج:</strong> ${data.total_results || 0}</p>`;
+            if (data.precedents && data.precedents.length > 0) {
+                data.precedents.forEach((p, i) => {
+                    html += `<div class="precedent-card" style="background:#f8fafc;border-radius:8px;padding:16px;margin:12px 0;border-right:4px solid ${p.similarity_percentage >= 80 ? '#10b981' : '#f59e0b'};">`;
+                    html += `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">`;
+                    html += `<strong>${escapeHtml(p.judgment_number || '')}</strong>`;
+                    html += `<span style="background:${p.similarity_percentage >= 80 ? '#10b981' : '#f59e0b'};color:white;padding:4px 12px;border-radius:20px;font-size:13px;">${p.similarity_percentage}% تشابه</span>`;
+                    html += `</div>`;
+                    html += `<p style="color:#64748b;font-size:13px;">${escapeHtml(p.court_name || '')} - ${escapeHtml(p.court_type || '')}</p>`;
+                    html += `<p>${escapeHtml(p.summary || '')}</p>`;
+                    if (p.similarity_points && p.similarity_points.length > 0) {
+                        html += '<p><strong>أوجه التشابه:</strong></p><ul>';
+                        p.similarity_points.forEach(s => html += `<li>${escapeHtml(s)}</li>`);
+                        html += '</ul>';
+                    }
+                    html += '</div>';
+                });
+            }
+            if (data.search_tips) html += `<div class="recommendation-box"><h4>نصائح للبحث</h4><p>${escapeHtml(data.search_tips)}</p></div>`;
+            html += '</div>';
+            return html;
+        }
+
+        // Case Evaluation (JSON response)
+        async function evaluateCase() {
+            const text = document.getElementById('evaluationText').value.trim();
+            const caseType = document.getElementById('evaluationCaseType').value;
+            const purpose = document.getElementById('evaluationPurpose').value;
+            const resultBox = document.getElementById('evaluationResult');
+            const btn = document.getElementById('evaluationBtn');
+            
+            if (!text) { alert('الرجاء إدخال وقائع القضية'); return; }
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> جاري التقييم...';
+            resultBox.className = 'result-box show';
+            resultBox.innerHTML = '<div class="result-title">جاري تحليل وتقييم القضية...</div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/case-evaluation`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text, case_type: caseType, evaluation_purpose: purpose })
+                });
+                const data = await response.json();
+                if (!data.success) throw new Error(data.error || 'حدث خطأ');
+                resultBox.className = 'result-box show success';
+                resultBox.innerHTML = renderEvaluationResult(data);
+            } catch (error) {
+                resultBox.className = 'result-box show error';
+                resultBox.innerHTML = `<div class="result-title">خطأ</div><div class="result-content">${error.message}</div>`;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'تقييم القضية';
+            }
+        }
+
+        function renderEvaluationResult(data) {
+            let html = '<div class="result-title">نتيجة التقييم</div><div class="result-content">';
+            
+            // Overall assessment
+            if (data.overall_assessment) {
+                const statusColors = { good: '#10b981', medium: '#f59e0b', weak: '#ef4444' };
+                const color = statusColors[data.overall_assessment.status_code] || '#6b7280';
+                html += `<div style="text-align:center;padding:20px;background:linear-gradient(135deg,${color}20,${color}10);border-radius:12px;margin-bottom:20px;">`;
+                html += `<h2 style="color:${color};margin:0;">${escapeHtml(data.overall_assessment.status || '')}</h2>`;
+                if (data.overall_assessment.summary) html += `<p style="margin-top:8px;">${escapeHtml(data.overall_assessment.summary)}</p>`;
+                html += '</div>';
+            }
+            
+            // Success probability
+            if (data.success_probability) {
+                const pct = data.success_probability.percentage || 0;
+                html += `<div style="margin:16px 0;"><strong>نسبة النجاح التقديرية:</strong>`;
+                html += `<div style="background:#e5e7eb;border-radius:10px;height:24px;margin-top:8px;overflow:hidden;">`;
+                html += `<div style="background:linear-gradient(90deg,#10b981,#3b82f6);height:100%;width:${pct}%;display:flex;align-items:center;justify-content:center;color:white;font-weight:600;">${pct}%</div>`;
+                html += `</div></div>`;
+            }
+            
+            // Strengths
+            if (data.strengths && data.strengths.length > 0) {
+                html += '<div class="conclusion-box"><h4>نقاط القوة</h4><ul>';
+                data.strengths.forEach(s => html += `<li>${escapeHtml(s)}</li>`);
+                html += '</ul></div>';
+            }
+            
+            // Weaknesses
+            if (data.weaknesses && data.weaknesses.length > 0) {
+                html += '<div style="background:#fef2f2;padding:16px;border-radius:8px;border-right:4px solid #ef4444;margin:12px 0;"><h4 style="color:#dc2626;">نقاط الضعف</h4><ul>';
+                data.weaknesses.forEach(w => html += `<li>${escapeHtml(w)}</li>`);
+                html += '</ul></div>';
+            }
+            
+            // Risks
+            if (data.potential_risks && data.potential_risks.length > 0) {
+                html += '<div style="background:#fffbeb;padding:16px;border-radius:8px;border-right:4px solid #f59e0b;margin:12px 0;"><h4 style="color:#d97706;">المخاطر المحتملة</h4><ul>';
+                data.potential_risks.forEach(r => html += `<li>${escapeHtml(r)}</li>`);
+                html += '</ul></div>';
+            }
+            
+            // Recommendations
+            if (data.strategic_recommendations && data.strategic_recommendations.length > 0) {
+                html += '<div class="recommendation-box"><h4>التوصيات الاستراتيجية</h4><ul>';
+                data.strategic_recommendations.forEach(r => html += `<li>${escapeHtml(r)}</li>`);
+                html += '</ul></div>';
+            }
+            
+            html += '</div>';
+            return html;
+        }
+
+        // Regulatory Updates (JSON response)
+        async function getRegulatoryUpdates() {
+            const text = document.getElementById('regulatoryText').value.trim();
+            const domain = document.getElementById('regulatoryDomain').value;
+            const resultBox = document.getElementById('regulatoryResult');
+            const btn = document.getElementById('regulatoryBtn');
+            
+            if (!text) { alert('الرجاء إدخال الموضوع'); return; }
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> جاري البحث...';
+            resultBox.className = 'result-box show';
+            resultBox.innerHTML = '<div class="result-title">جاري البحث عن المستجدات...</div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/regulatory-updates`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text, legal_domain: domain })
+                });
+                const data = await response.json();
+                if (!data.success) throw new Error(data.error || 'حدث خطأ');
+                resultBox.className = 'result-box show success';
+                resultBox.innerHTML = renderRegulatoryResult(data);
+            } catch (error) {
+                resultBox.className = 'result-box show error';
+                resultBox.innerHTML = `<div class="result-title">خطأ</div><div class="result-content">${error.message}</div>`;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'عرض المستجدات';
+            }
+        }
+
+        function renderRegulatoryResult(data) {
+            let html = '<div class="result-title">المستجدات النظامية</div><div class="result-content">';
+            html += `<p><strong>عدد المستجدات:</strong> ${data.total_updates || 0}</p>`;
+            if (data.updates && data.updates.length > 0) {
+                data.updates.forEach((u, i) => {
+                    const isNew = u.update_level_code === 'new';
+                    html += `<div style="background:#f8fafc;border-radius:8px;padding:16px;margin:12px 0;border-right:4px solid ${isNew ? '#10b981' : '#3b82f6'};">`;
+                    html += `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">`;
+                    html += `<strong>${escapeHtml(u.system_name || '')}</strong>`;
+                    html += `<span style="background:${isNew ? '#10b981' : '#3b82f6'};color:white;padding:4px 12px;border-radius:20px;font-size:12px;">${escapeHtml(u.update_level || '')}</span>`;
+                    html += `</div>`;
+                    if (u.amendment_title) html += `<p style="color:#1e40af;font-weight:600;">${escapeHtml(u.amendment_title)}</p>`;
+                    if (u.effective_date) html += `<p><strong>تاريخ النفاذ:</strong> ${escapeHtml(u.effective_date)}</p>`;
+                    if (u.summary) html += `<p>${escapeHtml(u.summary)}</p>`;
+                    if (u.practical_impact && u.practical_impact.length > 0) {
+                        html += '<p><strong>الأثر العملي:</strong></p><ul>';
+                        u.practical_impact.forEach(p => html += `<li>${escapeHtml(p)}</li>`);
+                        html += '</ul>';
+                    }
+                    if (u.relevant_for) html += `<p style="color:#059669;"><strong>يهمك إذا كنت تعمل على:</strong> ${escapeHtml(u.relevant_for)}</p>`;
+                    html += '</div>';
+                });
+            }
+            if (data.recommendation) html += `<div class="recommendation-box"><h4>توصية</h4><p>${escapeHtml(data.recommendation)}</p></div>`;
+            html += '</div>';
+            return html;
+        }
+
+        // Legal Grounds (JSON response)
+        async function findLegalGrounds() {
+            const text = document.getElementById('groundsText').value.trim();
+            const resultBox = document.getElementById('groundsResult');
+            const btn = document.getElementById('groundsBtn');
+            
+            if (!text) { alert('الرجاء إدخال الوقائع أو المسألة القانونية'); return; }
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> جاري البحث...';
+            resultBox.className = 'result-box show';
+            resultBox.innerHTML = '<div class="result-title">جاري استخراج الأسانيد القانونية...</div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/legal-grounds`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text })
+                });
+                const data = await response.json();
+                if (!data.success) throw new Error(data.error || 'حدث خطأ');
+                resultBox.className = 'result-box show success';
+                resultBox.innerHTML = renderGroundsResult(data);
+            } catch (error) {
+                resultBox.className = 'result-box show error';
+                resultBox.innerHTML = `<div class="result-title">خطأ</div><div class="result-content">${error.message}</div>`;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'استخراج الأسانيد';
+            }
+        }
+
+        function renderGroundsResult(data) {
+            let html = '<div class="result-title">الإسناد القانوني</div><div class="result-content">';
+            if (data.facts_summary) html += `<p><strong>ملخص الوقائع:</strong> ${escapeHtml(data.facts_summary)}</p>`;
+            
+            const grounds = data.legal_grounds || {};
+            
+            // Sharia principles
+            if (grounds.sharia_principles && grounds.sharia_principles.length > 0) {
+                html += '<div class="conclusion-box"><h4>الشريعة الإسلامية</h4>';
+                grounds.sharia_principles.forEach(p => {
+                    html += `<div style="padding:8px 0;border-bottom:1px solid #d1fae5;">`;
+                    html += `<strong>${escapeHtml(p.type || '')}:</strong> ${escapeHtml(p.reference || '')}`;
+                    if (p.relevance) html += `<br><small style="color:#065f46;">${escapeHtml(p.relevance)}</small>`;
+                    html += '</div>';
+                });
+                html += '</div>';
+            }
+            
+            // Regulations
+            if (grounds.regulations && grounds.regulations.length > 0) {
+                html += '<div class="recommendation-box"><h4>الأنظمة</h4>';
+                grounds.regulations.forEach(r => {
+                    html += `<div style="padding:8px 0;border-bottom:1px solid #dbeafe;">`;
+                    html += `<strong>${escapeHtml(r.system_name || '')}</strong> - المادة ${escapeHtml(r.article_number || '')}`;
+                    if (r.article_text) html += `<br><em>${escapeHtml(r.article_text)}</em>`;
+                    if (r.relevance) html += `<br><small style="color:#1e40af;">${escapeHtml(r.relevance)}</small>`;
+                    html += '</div>';
+                });
+                html += '</div>';
+            }
+            
+            // Judicial precedents
+            if (grounds.judicial_precedents && grounds.judicial_precedents.length > 0) {
+                html += '<div style="background:#fef3c7;padding:16px;border-radius:8px;border-right:4px solid #f59e0b;margin:12px 0;"><h4 style="color:#92400e;">السوابق القضائية</h4>';
+                grounds.judicial_precedents.forEach(p => {
+                    html += `<div style="padding:8px 0;border-bottom:1px solid #fcd34d;">`;
+                    html += `<strong>${escapeHtml(p.judgment_number || '')}</strong> - ${escapeHtml(p.court || '')}`;
+                    if (p.principle) html += `<br>${escapeHtml(p.principle)}`;
+                    if (p.relevance) html += `<br><small style="color:#92400e;">${escapeHtml(p.relevance)}</small>`;
+                    html += '</div>';
+                });
+                html += '</div>';
+            }
+            
+            // Jurisprudential principles
+            if (grounds.jurisprudential_principles && grounds.jurisprudential_principles.length > 0) {
+                html += '<div style="background:#f3e8ff;padding:16px;border-radius:8px;border-right:4px solid #9333ea;margin:12px 0;"><h4 style="color:#7c3aed;">المبادئ الفقهية</h4>';
+                grounds.jurisprudential_principles.forEach(p => {
+                    html += `<div style="padding:8px 0;border-bottom:1px solid #d8b4fe;">`;
+                    html += `<strong>${escapeHtml(p.principle || '')}</strong>`;
+                    if (p.explanation) html += `<br>${escapeHtml(p.explanation)}`;
+                    if (p.relevance) html += `<br><small style="color:#7c3aed;">${escapeHtml(p.relevance)}</small>`;
+                    html += '</div>';
+                });
+                html += '</div>';
+            }
+            
+            // Strongest grounds
+            if (data.strongest_grounds && data.strongest_grounds.length > 0) {
+                html += '<div class="conclusion-box"><h4>أقوى الأسانيد</h4><ul>';
+                data.strongest_grounds.forEach(g => html += `<li>${escapeHtml(g)}</li>`);
+                html += '</ul></div>';
+            }
+            
+            if (data.citation_summary) html += `<div class="recommendation-box"><h4>ملخص الإسناد</h4><p>${escapeHtml(data.citation_summary)}</p></div>`;
+            if (data.usage_recommendation) html += `<p><strong>توصية للاستخدام:</strong> ${escapeHtml(data.usage_recommendation)}</p>`;
+            
+            html += '</div>';
+            return html;
+        }
+
+        // Example setters for new tools
+        function setPrecedentExample1() {
+            document.getElementById('precedentText').value = 'نزاع تجاري حول عقد توريد مواد بناء، تأخر المورد في تسليم البضاعة لمدة 3 أشهر، نطالب بالتعويض عن الضرر المباشر الناجم عن الإخلال بالعقد.';
+            document.getElementById('precedentCourt').value = 'moj';
+        }
+
+        function setPrecedentExample2() {
+            document.getElementById('precedentText').value = 'عامل تم فصله من العمل دون إنذار مسبق ودون سبب مشروع، عمل لدى الشركة 5 سنوات، يطالب بتعويض عن الفصل التعسفي ومكافأة نهاية الخدمة.';
+            document.getElementById('precedentCourt').value = 'moj';
+        }
+
+        function setEvaluationExample1() {
+            document.getElementById('evaluationText').value = `شركتنا أبرمت عقد توريد مع شركة أخرى لتوريد معدات بقيمة 2 مليون ريال.
+سددنا دفعة مقدمة 30% من قيمة العقد.
+انقضت مدة التوريد المتفق عليها (90 يوم) دون تنفيذ.
+أرسلنا 3 إنذارات رسمية دون استجابة.
+لدينا نسخة من العقد موقعة، إيصالات الدفع، والمراسلات.
+نريد المطالبة بفسخ العقد واسترداد المبالغ المدفوعة مع التعويض.`;
+            document.getElementById('evaluationCaseType').value = 'commercial';
+            document.getElementById('evaluationPurpose').value = 'pre_filing';
+        }
+
+        function setEvaluationExample2() {
+            document.getElementById('evaluationText').value = `موظف يعمل منذ 4 سنوات براتب 18,000 ريال شهرياً.
+تم إنهاء خدماته بشكل مفاجئ دون إنذار مسبق.
+لم يستلم راتب آخر شهرين ولا مكافأة نهاية الخدمة.
+لديه عقد عمل موقع وكشوفات رواتب.
+الشركة ترفض التواصل.`;
+            document.getElementById('evaluationCaseType').value = 'labor';
+            document.getElementById('evaluationPurpose').value = 'pre_filing';
+        }
+
+        function setRegulatoryExample1() {
+            document.getElementById('regulatoryText').value = 'نظام الشركات والتعديلات الأخيرة على إجراءات التأسيس والإفصاح';
+            document.getElementById('regulatoryDomain').value = 'commercial';
+        }
+
+        function setRegulatoryExample2() {
+            document.getElementById('regulatoryText').value = 'نظام العمل والتحديثات المتعلقة بإنهاء عقود العمل والتعويضات';
+            document.getElementById('regulatoryDomain').value = 'labor';
+        }
+
+        function setGroundsExample1() {
+            document.getElementById('groundsText').value = `إخلال المورد بعقد التوريد وعدم تسليم البضاعة في الموعد المحدد رغم استلام الدفعة المقدمة بنسبة 30% من قيمة العقد.
+انقضت المدة المتفق عليها ولم يتم التوريد.
+تم إرسال إنذارات رسمية متعددة دون استجابة.
+نريد إسناد الطلب بفسخ العقد واسترداد المبالغ والتعويض.`;
+        }
+
+        function setGroundsExample2() {
+            document.getElementById('groundsText').value = `فصل الموظف من العمل دون إنذار مسبق ودون سبب مشروع بعد 5 سنوات من الخدمة.
+لم يرتكب الموظف أي مخالفة تستوجب الفصل.
+لم يتم إتباع الإجراءات النظامية للإنهاء.
+نريد إسناد الطلب بالتعويض عن الفصل التعسفي.`;
+        }
+
+        // Judgment Comparison (JSON response, not streaming)
+        async function compareJudgments() {
+            const text = document.getElementById('comparisonText').value.trim();
+            const comparisonCriteria = document.getElementById('comparisonCriteria').value;
+            const resultBox = document.getElementById('comparisonResult');
+            const btn = document.getElementById('comparisonBtn');
+            
+            if (!text) { 
+                alert('الرجاء إدخال نصوص الأحكام المراد مقارنتها'); 
+                return; 
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> جاري المقارنة...';
+            resultBox.className = 'result-box show';
+            resultBox.innerHTML = '<div class="result-title">جاري تحليل ومقارنة الأحكام...</div><div class="result-content">قد تستغرق العملية بضع ثوان</div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/judgment-comparison`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        text: text, 
+                        comparison_criteria: comparisonCriteria 
+                    })
+                });
+
+                const data = await response.json();
+
+                if (!data.success) {
+                    throw new Error(data.error || 'حدث خطأ في المقارنة');
+                }
+
+                // Render the comparison result
+                resultBox.className = 'result-box show success';
+                resultBox.innerHTML = renderComparisonResult(data);
+
+            } catch (error) {
+                resultBox.className = 'result-box show error';
+                resultBox.innerHTML = `<div class="result-title">خطأ</div><div class="result-content">${error.message}</div>`;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'مقارنة الأحكام';
+            }
+        }
+
+        // Render comparison table and conclusions
+        function renderComparisonResult(data) {
+            let html = '<div class="result-title">نتيجة المقارنة</div>';
+            
+            // Render comparison table
+            if (data.comparison_table && data.comparison_table.length > 0) {
+                html += '<div class="comparison-table-container">';
+                html += '<table class="comparison-table">';
+                
+                // Table header
+                html += '<thead><tr>';
+                html += '<th>البند</th>';
+                html += '<th>الحكم الأول</th>';
+                html += '<th>الحكم الثاني</th>';
+                
+                // Check if there's a third judgment
+                const hasThirdJudgment = data.comparison_table.some(row => row.judgment_3 && row.judgment_3.trim());
+                if (hasThirdJudgment) {
+                    html += '<th>الحكم الثالث</th>';
+                }
+                html += '<th>الملاحظات / الفروق</th>';
+                html += '</tr></thead>';
+                
+                // Table body
+                html += '<tbody>';
+                for (const row of data.comparison_table) {
+                    html += '<tr>';
+                    html += `<td class="aspect-cell">${escapeHtml(row.aspect || '')}</td>`;
+                    html += `<td>${escapeHtml(row.judgment_1 || '')}</td>`;
+                    html += `<td>${escapeHtml(row.judgment_2 || '')}</td>`;
+                    if (hasThirdJudgment) {
+                        html += `<td>${escapeHtml(row.judgment_3 || '-')}</td>`;
+                    }
+                    html += `<td class="notes-cell">${escapeHtml(row.notes || '')}</td>`;
+                    html += '</tr>';
+                }
+                html += '</tbody></table></div>';
+            }
+            
+            // Render legal conclusion
+            if (data.legal_conclusion) {
+                html += '<div class="conclusion-box">';
+                html += '<h4>الاستنتاج القانوني</h4>';
+                html += `<p>${escapeHtml(data.legal_conclusion)}</p>`;
+                html += '</div>';
+            }
+            
+            // Render usage recommendation
+            if (data.usage_recommendation) {
+                html += '<div class="recommendation-box">';
+                html += '<h4>التوصية للاستخدام</h4>';
+                html += `<p>${escapeHtml(data.usage_recommendation)}</p>`;
+                html += '</div>';
+            }
+            
+            return html;
+        }
+
+        // Helper function to escape HTML
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>

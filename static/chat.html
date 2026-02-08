@@ -1,0 +1,2041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>راشد - Rashid | Saudi Legal AI Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            color: #1e293b;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e40af 0%, #0ea5e9 100%);
+            color: white;
+            padding: 15px 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+        
+        h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .header p {
+            font-size: 13px;
+            opacity: 0.9;
+            margin: 0;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 0;
+            flex: 1;
+            overflow: hidden;
+            background: white;
+        }
+        
+        .sidebar {
+            background: #f8fafc;
+            border-right: 1px solid #cbd5e1;
+            padding: 15px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar-content {
+            flex: 1;
+            min-height: 0;
+        }
+        
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background: white;
+            overflow: hidden;
+        }
+        
+        .control-group {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #cbd5e1;
+        }
+        
+        .control-group:last-child {
+            border-bottom: none;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 13px;
+            color: #334155;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #cbd5e1;
+            background: #ffffff;
+            color: #1e293b;
+            font-size: 13px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
+        
+        input[type="range"] {
+            padding: 0;
+            height: 6px;
+            background: #cbd5e1;
+            border-radius: 3px;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #0ea5e9;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            background: #0ea5e9;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+        
+        input[type="checkbox"] {
+            width: auto;
+            margin-right: 8px;
+            cursor: pointer;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #1e40af 0%, #0ea5e9 100%);
+            color: #ffffff;
+            border: none;
+            padding: 10px 16px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            margin-top: 8px;
+            width: 100%;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .chat-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8fafc;
+            min-height: 0;
+        }
+        
+        .chat-area::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .chat-area::-webkit-scrollbar-track {
+            background: #e2e8f0;
+        }
+        
+        .chat-area::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 4px;
+        }
+        
+        .chat-area::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+        
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .sidebar::-webkit-scrollbar-track {
+            background: #e2e8f0;
+        }
+        
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 3px;
+        }
+        
+        .message {
+            margin-bottom: 16px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            background: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .message.user {
+            border-left: 4px solid #0ea5e9;
+            background: linear-gradient(135deg, #f0f9ff 0%, #ffffff 100%);
+        }
+        
+        .message.assistant {
+            border-left: 4px solid #10b981;
+            background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+        }
+        
+        .message.system {
+            border-left: 4px solid #f59e0b;
+            background: linear-gradient(135deg, #fffbeb 0%, #ffffff 100%);
+            font-size: 12px;
+        }
+        
+        .message-role {
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            font-size: 11px;
+            color: #64748b;
+            letter-spacing: 0.5px;
+        }
+        
+        .message-content {
+            line-height: 1.6;
+            color: #1e293b;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .input-area {
+            display: flex;
+            gap: 10px;
+            padding: 15px 20px;
+            background: white;
+            border-top: 1px solid #cbd5e1;
+            flex-shrink: 0;
+        }
+        
+        #userInput {
+            flex: 1;
+            min-height: 50px;
+            max-height: 150px;
+            resize: none;
+            font-family: inherit;
+        }
+        
+        #sendBtn {
+            width: 100px;
+            align-self: flex-end;
+            margin-top: 0;
+        }
+        
+        .rag-search-section {
+            background: #f8fafc;
+            border-top: 2px solid #cbd5e1;
+            padding: 15px 20px;
+            flex-shrink: 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .rag-search-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            padding: 8px 0;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #1e40af;
+            user-select: none;
+        }
+        
+        .rag-search-toggle:hover {
+            color: #0ea5e9;
+        }
+        
+        .rag-search-content {
+            display: none;
+        }
+        
+        .rag-search-content.active {
+            display: block;
+        }
+        
+        .rag-filter-row {
+            margin-bottom: 15px;
+        }
+        
+        .rag-filter-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .rag-filter-label {
+            font-weight: 600;
+            font-size: 12px;
+            color: #334155;
+            margin-bottom: 8px;
+            display: block;
+        }
+        
+        .rag-filter-checkboxes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .rag-filter-checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 6px 10px;
+            background: white;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 12px;
+        }
+        
+        .rag-filter-checkbox-item:hover {
+            background: #f1f5f9;
+            border-color: #0ea5e9;
+        }
+        
+        .rag-filter-checkbox-item input[type="checkbox"] {
+            margin-right: 6px;
+            cursor: pointer;
+            width: 14px;
+            height: 14px;
+        }
+        
+        .rag-filter-checkbox-item label {
+            cursor: pointer;
+            margin: 0;
+            user-select: none;
+        }
+        
+        .rag-filter-checkbox-item.checked {
+            background: #eff6ff;
+            border-color: #0ea5e9;
+        }
+        
+        .rag-search-input-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .rag-search-input-group input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+        
+        .rag-search-input-group button {
+            padding: 8px 20px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 13px;
+            transition: all 0.2s ease;
+        }
+        
+        .rag-search-input-group button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+        }
+        
+        .rag-warning {
+            font-size: 11px;
+            color: #92400e;
+            margin-top: 8px;
+            padding: 6px;
+            background: #fef3c7;
+            border-left: 3px solid #f59e0b;
+            border-radius: 4px;
+        }
+        
+        .value-display {
+            font-size: 11px;
+            color: #64748b;
+            font-weight: 500;
+        }
+        
+        .model-info {
+            font-size: 11px;
+            color: #64748b;
+            margin-top: 6px;
+            line-height: 1.4;
+        }
+        
+        .loading {
+            color: #64748b;
+            font-style: italic;
+        }
+        
+        .token-usage {
+            margin-top: 12px;
+            padding: 10px;
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 11px;
+            color: #64748b;
+        }
+        
+        .token-usage strong {
+            color: #1e293b;
+        }
+        
+        .file-item {
+            padding: 8px;
+            margin: 4px 0;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .file-item button {
+            width: auto;
+            padding: 4px 10px;
+            font-size: 11px;
+            margin: 0;
+        }
+        
+        .upload-status, .speech-status {
+            padding: 8px 10px;
+            margin-top: 8px;
+            font-size: 12px;
+            border-radius: 6px;
+        }
+        
+        .upload-status.success, .speech-status.success {
+            color: #065f46;
+            background: #d1fae5;
+            border: 1px solid #6ee7b7;
+        }
+        
+        .upload-status.error, .speech-status.error {
+            color: #991b1b;
+            background: #fee2e2;
+            border: 1px solid #fca5a5;
+        }
+        
+        .upload-status.uploading, .speech-status.uploading {
+            color: #1e40af;
+            background: #dbeafe;
+            border: 1px solid #93c5fd;
+        }
+        
+        .speech-controls {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+        }
+        
+        .speech-controls button {
+            flex: 1;
+            padding: 6px;
+            font-size: 11px;
+        }
+        
+        .recording-indicator {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            background: #f97316;
+            border-radius: 50%;
+            animation: pulse 1s infinite;
+            margin-right: 6px;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { 
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% { 
+                opacity: 0.6;
+                transform: scale(1.1);
+            }
+        }
+        
+        hr {
+            margin: 12px 0;
+            border: none;
+            border-top: 1px solid #e0e0e0;
+        }
+        
+        audio {
+            border-radius: 6px;
+            margin-top: 8px;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+            }
+            
+            .sidebar {
+                max-height: 300px;
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>راشد - Rashid | Saudi Legal AI Assistant</h1>
+        <p>محامي سعودي متخصص بخبرة +20 عاماً | Saudi Lawyer with 20+ Years Experience</p>
+    </div>
+    
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-content">
+            <div class="control-group">
+                <label for="modelSelect">Model:</label>
+                <select id="modelSelect">
+                    <option value="">Loading models...</option>
+                </select>
+                <div id="modelInfo" class="model-info"></div>
+                <div id="thinkingModeInfo" style="display: none; background: #d1fae5; border: 1px solid #10b981; color: #065f46; padding: 10px; border-radius: 6px; font-size: 12px; margin-top: 8px;">
+                    <strong>🧠 Thinking Mode Active</strong><br>
+                    This model uses advanced reasoning and may take longer to respond. It will show its thought process for complex legal analysis.
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label>
+                    <input type="checkbox" id="streamToggle" checked>
+                    Enable Streaming
+                </label>
+            </div>
+            
+            <div class="control-group">
+                <label>
+                    <input type="checkbox" id="useRagToggle" checked>
+                    Use RAG (Document Search)
+                </label>
+                <div class="model-info" style="margin-top: 5px; font-size: 10px;">
+                    Searches uploaded documents for context
+                </div>
+            </div>
+            
+            <div class="control-group" id="ragUserFilesGroup" style="display: none;">
+                <label style="font-size: 12px; margin-bottom: 5px; display: block;">User ID (for uploaded documents):</label>
+                <input type="text" id="chatRagUserId" placeholder="Enter user ID" style="width: 100%; padding: 6px; margin-bottom: 8px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px;">
+                <button onclick="loadChatUserFiles()" style="padding: 6px 12px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 11px; margin-bottom: 8px; width: 100%;">Load User Files</button>
+                <div id="chatRagUserFilesList" style="max-height: 120px; overflow-y: auto; border: 1px solid #cbd5e1; border-radius: 4px; padding: 6px; background: white; display: none; font-size: 11px;">
+                    <div style="color: #64748b; margin-bottom: 6px;">Select files (leave empty for all):</div>
+                    <div id="chatRagUserFilesCheckboxes"></div>
+                </div>
+            </div>
+            
+            <div class="control-group" id="ragTopKGroup">
+                <label for="ragTopK">RAG Top K: <span id="ragTopKValue" class="value-display">5</span></label>
+                <input type="range" id="ragTopK" min="1" max="20" step="1" value="5">
+                <div class="model-info" style="margin-top: 5px; font-size: 10px;">
+                    Number of document chunks to retrieve
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label for="webSearchMode">Web Search:</label>
+                <select id="webSearchMode">
+                    <option value="disabled">Disabled</option>
+                    <option value="fast">Fast Search</option>
+                    <option value="deep">Deep Search</option>
+                </select>
+                <div class="model-info" style="margin-top: 5px; font-size: 10px;">
+                    Requires Perplexity API key
+                </div>
+            </div>
+            
+            <hr>
+            
+            <div class="control-group">
+                <label style="font-weight: bold; margin-bottom: 10px;">Speech Features:</label>
+                
+                <div style="margin-bottom: 10px;">
+                    <label for="ttsVoice" style="font-size: 12px;">TTS Voice:</label>
+                    <select id="ttsVoice" style="font-size: 12px; padding: 5px;">
+                        <option value="alloy">Alloy</option>
+                        <option value="echo">Echo</option>
+                        <option value="fable">Fable</option>
+                        <option value="onyx">Onyx</option>
+                        <option value="nova">Nova</option>
+                        <option value="shimmer">Shimmer</option>
+                    </select>
+                </div>
+                
+                <div style="margin-bottom: 10px;">
+                    <label for="ttsModel" style="font-size: 12px;">TTS Model:</label>
+                    <select id="ttsModel" style="font-size: 12px; padding: 5px;">
+                        <option value="tts-1">tts-1 (Faster)</option>
+                        <option value="tts-1-hd">tts-1-hd (Higher Quality)</option>
+                    </select>
+                </div>
+                
+                <button id="ttsBtn" onclick="textToSpeech()" style="margin-top: 5px; font-size: 12px; padding: 8px;">
+                    Text to Speech
+                </button>
+                
+                <div style="margin-top: 10px;">
+                    <button id="recordBtn" onclick="toggleRecording()" style="font-size: 12px; padding: 8px;">
+                        Start Recording
+                    </button>
+                    <button id="stopRecordBtn" onclick="stopRecording()" style="font-size: 12px; padding: 8px; margin-top: 5px; display: none;">
+                        Stop & Transcribe
+                    </button>
+                </div>
+                
+                <div style="margin-top: 10px;">
+                    <label for="audioFileUpload" style="font-size: 12px;">Or Upload Audio:</label>
+                    <input type="file" id="audioFileUpload" accept="audio/*" style="font-size: 11px; padding: 5px; margin-top: 5px;">
+                    <button onclick="transcribeUploadedAudio()" style="font-size: 12px; padding: 8px; margin-top: 5px; width: 100%;">
+                        Transcribe Audio File
+                    </button>
+                </div>
+                
+                <div id="speechStatus" style="margin-top: 10px; font-size: 12px; color: #666666;"></div>
+                <audio id="audioPlayer" controls style="width: 100%; margin-top: 10px; display: none;"></audio>
+            </div>
+            
+            <hr style="margin: 15px 0; border: none; border-top: 1px solid #000000;">
+            
+            <div class="control-group">
+                <label for="fileUpload" style="font-weight: bold; margin-bottom: 10px;">Upload Document:</label>
+                <label for="uploadUserId" style="font-size: 12px; margin-bottom: 5px; display: block;">User ID:</label>
+                <input type="text" id="uploadUserId" placeholder="Enter user ID" style="width: 100%; padding: 6px; margin-bottom: 10px; font-size: 12px; border: 1px solid #cbd5e1; border-radius: 4px;">
+                <input type="file" id="fileUpload" accept=".pdf,.txt,.md,.jpg,.jpeg,.png">
+                <div class="model-info" style="margin-top: 5px; font-size: 10px;">
+                    Supported formats: PDF, TXT, MD, JPG, PNG<br>
+                    File will be saved to S3: sanad-data-source/{user_id}/
+                </div>
+                <button id="uploadBtn" onclick="uploadFile()" style="margin-top: 10px;">Upload Document</button>
+                <div id="uploadStatus" style="margin-top: 10px; font-size: 12px; color: #666666;"></div>
+            </div>
+            
+            <div class="control-group" id="uploadedFilesSection" style="display: none;">
+                <label style="font-weight: bold; margin-bottom: 10px;">Uploaded Documents:</label>
+                <div id="uploadedFilesList" style="font-size: 12px; max-height: 150px; overflow-y: auto; border: 1px solid #cccccc; padding: 5px; background: #fafafa;"></div>
+            </div>
+            
+            <div class="control-group" id="temperatureGroup">
+                <label for="temperature">Temperature: <span id="tempValue" class="value-display">0.7</span></label>
+                <input type="range" id="temperature" min="0" max="2" step="0.1" value="0.7">
+            </div>
+            
+            <div class="control-group" id="topPGroup">
+                <label for="topP">Top P: <span id="topPValue" class="value-display">0.9</span></label>
+                <input type="range" id="topP" min="0" max="1" step="0.1" value="0.9">
+            </div>
+            
+            <div class="control-group">
+                <label for="maxTokens">Max Tokens: <span id="maxTokensValue" class="value-display">1000</span></label>
+                <input type="range" id="maxTokens" min="100" max="4000" step="100" value="1000">
+            </div>
+            
+            <div class="control-group" id="frequencyPenaltyGroup">
+                <label for="frequencyPenalty">Frequency Penalty (OpenAI): <span id="freqPenValue" class="value-display">0.0</span></label>
+                <input type="range" id="frequencyPenalty" min="-2" max="2" step="0.1" value="0">
+            </div>
+            
+            <div class="control-group" id="presencePenaltyGroup">
+                <label for="presencePenalty">Presence Penalty (OpenAI): <span id="presPenValue" class="value-display">0.0</span></label>
+                <input type="range" id="presencePenalty" min="-2" max="2" step="0.1" value="0">
+            </div>
+            
+            <div class="control-group" id="topKGroup" style="display: none;">
+                <label for="topK">Top K (Gemini): <span id="topKValue" class="value-display">40</span></label>
+                <input type="range" id="topK" min="1" max="100" step="1" value="40">
+            </div>
+            
+            <button onclick="clearChat()">Clear Chat</button>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="chat-area" id="chatArea"></div>
+            
+            <div class="input-area">
+                <textarea id="userInput" placeholder="اكتب سؤالك القانوني هنا... | Type your legal question here..."></textarea>
+                <button id="sendBtn" onclick="sendMessage()">Send</button>
+            </div>
+            
+            <div class="rag-search-section">
+                <div class="rag-search-toggle" onclick="toggleRagSearch()">
+                    <span>🔍 RAG Document Search</span>
+                    <span id="ragToggleIcon">▼</span>
+                </div>
+                <div class="rag-search-content" id="ragSearchContent">
+                    <div class="rag-filter-row">
+                        <label class="rag-filter-label">Pinecone Indexes:</label>
+                        <div class="rag-filter-checkboxes">
+                            <div class="rag-filter-checkbox-item" onclick="toggleRagCheckbox(this)">
+                                <input type="checkbox" id="rag_index_qadha" value="qadha">
+                                <label for="rag_index_qadha">Qadha</label>
+                            </div>
+                            <div class="rag-filter-checkbox-item" onclick="toggleRagCheckbox(this)">
+                                <input type="checkbox" id="rag_index_contracts" value="contracts">
+                                <label for="rag_index_contracts">Contracts</label>
+                            </div>
+                            <div class="rag-filter-checkbox-item" onclick="toggleRagCheckbox(this)">
+                                <input type="checkbox" id="rag_index_bog" value="bog">
+                                <label for="rag_index_bog">BOG</label>
+                            </div>
+                            <div class="rag-filter-checkbox-item" onclick="toggleRagCheckbox(this)">
+                                <input type="checkbox" id="rag_index_new_ncar" value="new_ncar">
+                                <label for="rag_index_new_ncar">New NCAR</label>
+                            </div>
+                            <div class="rag-filter-checkbox-item" onclick="toggleRagCheckbox(this)">
+                                <input type="checkbox" id="rag_index_namazig" value="namazig">
+                                <label for="rag_index_namazig">Namazig</label>
+                            </div>
+                        </div>
+                        <div class="rag-warning">
+                            <strong>[WARNING]</strong> You must check at least one index to search.
+                        </div>
+                    </div>
+                    
+                    <div class="rag-filter-row">
+                        <label class="rag-filter-label">Classification (التصنيف):</label>
+                        <div class="rag-filter-checkboxes" id="ragClassificationCheckboxes">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <div class="rag-filter-row">
+                        <label class="rag-filter-label">User ID (for uploaded documents):</label>
+                        <input type="text" id="ragUserId" placeholder="Enter user ID" style="width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; margin-bottom: 10px;">
+                        <button onclick="loadUserFiles()" style="padding: 6px 12px; background: #3b82f6; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; margin-bottom: 10px;">Load User Files</button>
+                        <div id="ragUserFilesList" style="max-height: 150px; overflow-y: auto; border: 1px solid #cbd5e1; border-radius: 4px; padding: 8px; background: white; display: none;">
+                            <div style="font-size: 11px; color: #64748b; margin-bottom: 8px;">Select files to search (leave empty to search all):</div>
+                            <div id="ragUserFilesCheckboxes"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="rag-search-input-group">
+                        <input type="text" id="ragSearchQuery" placeholder="Enter RAG search query... | اكتب استفسار البحث...">
+                        <input type="number" id="ragSearchTopK" min="1" max="50" value="2" style="width: 80px; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px;" title="Number of results">
+                        <button onclick="performRagSearch()">🔍 Search</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const API_BASE = window.location.protocol === 'file:' 
+            ? 'http://localhost:8000/api/v1' 
+            : `${window.location.origin}/api/v1`;
+        let messages = [];
+        let isGenerating = false;
+        
+        // Classification systems for RAG search
+        const classifications = [
+            "النظام الإداري",
+            "النظام الجزائي",
+            "نظام الأحوال الشخصية",
+            "نظام المعاملات المدنية",
+            "نظام الإجراءات الجزائية",
+            "نظام المرافعات",
+            "نظام الملكية الفكرية",
+            "نظام الاستثمار",
+            "النظام الجوي",
+            "النظام البحري",
+            "النظام الدولي",
+            "نظام سوق المال",
+            "نظام العمل",
+            "نظام التنفيذ",
+            "النظام البيئي",
+            "النظام الدستوري",
+            "النظام الاداري",
+            "النظام التجاري"
+        ];
+        
+        // Load models on page load
+        window.addEventListener('load', async () => {
+            await loadModels();
+            initializeRagClassifications();
+            
+            // Allow Enter key to trigger RAG search
+            document.getElementById('ragSearchQuery').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    performRagSearch();
+                }
+            });
+            
+            // Show/hide RAG user files section when RAG is toggled
+            document.getElementById('useRagToggle').addEventListener('change', (e) => {
+                const ragUserFilesGroup = document.getElementById('ragUserFilesGroup');
+                if (e.target.checked) {
+                    ragUserFilesGroup.style.display = 'block';
+                } else {
+                    ragUserFilesGroup.style.display = 'none';
+                }
+            });
+            
+            // Initialize visibility based on checkbox state
+            const useRagToggle = document.getElementById('useRagToggle');
+            const ragUserFilesGroup = document.getElementById('ragUserFilesGroup');
+            if (useRagToggle.checked) {
+                ragUserFilesGroup.style.display = 'block';
+            }
+        });
+        
+        // Initialize RAG classification checkboxes
+        function initializeRagClassifications() {
+            const container = document.getElementById('ragClassificationCheckboxes');
+            classifications.forEach((classification, index) => {
+                const item = document.createElement('div');
+                item.className = 'rag-filter-checkbox-item';
+                item.onclick = () => toggleRagCheckbox(item);
+                const checkboxId = `rag_classification_${index}`;
+                item.innerHTML = `
+                    <input type="checkbox" id="${checkboxId}" value="${classification}">
+                    <label for="${checkboxId}">${classification}</label>
+                `;
+                container.appendChild(item);
+            });
+        }
+        
+        // Toggle RAG search section
+        function toggleRagSearch() {
+            const content = document.getElementById('ragSearchContent');
+            const icon = document.getElementById('ragToggleIcon');
+            if (content.classList.contains('active')) {
+                content.classList.remove('active');
+                icon.textContent = '▼';
+            } else {
+                content.classList.add('active');
+                icon.textContent = '▲';
+            }
+        }
+        
+        // Toggle RAG checkbox
+        function toggleRagCheckbox(element) {
+            const checkbox = element.querySelector('input[type="checkbox"]');
+            checkbox.checked = !checkbox.checked;
+            if (checkbox.checked) {
+                element.classList.add('checked');
+            } else {
+                element.classList.remove('checked');
+            }
+        }
+        
+        // Get selected RAG indexes
+        function getSelectedRagIndexes() {
+            const indexes = [];
+            document.querySelectorAll('input[type="checkbox"][id^="rag_index_"]:checked').forEach(cb => {
+                indexes.push(cb.value);
+            });
+            return indexes;
+        }
+        
+        // Get selected RAG classifications
+        function getSelectedRagClassifications() {
+            const classifications = [];
+            document.querySelectorAll('input[type="checkbox"][id^="rag_classification_"]:checked').forEach(cb => {
+                classifications.push(cb.value);
+            });
+            return classifications;
+        }
+        
+        // Load user files for chat RAG
+        async function loadChatUserFiles() {
+            const userId = document.getElementById('chatRagUserId').value.trim();
+            if (!userId) {
+                alert('Please enter a user ID');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/rag/user-files/list/${encodeURIComponent(userId)}`);
+                if (!response.ok) {
+                    throw new Error(`Failed to load files: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                const filesList = document.getElementById('chatRagUserFilesList');
+                const checkboxesDiv = document.getElementById('chatRagUserFilesCheckboxes');
+                
+                if (data.files && data.files.length > 0) {
+                    checkboxesDiv.innerHTML = '';
+                    data.files.forEach(filename => {
+                        const item = document.createElement('div');
+                        item.style.cssText = 'display: flex; align-items: center; padding: 4px 0; cursor: pointer;';
+                        item.onclick = () => {
+                            const checkbox = item.querySelector('input[type="checkbox"]');
+                            checkbox.checked = !checkbox.checked;
+                        };
+                        const checkboxId = `chat_rag_file_${filename.replace(/[^a-zA-Z0-9]/g, '_')}`;
+                        item.innerHTML = `
+                            <input type="checkbox" id="${checkboxId}" value="${filename}" style="margin-right: 6px; cursor: pointer;">
+                            <label for="${checkboxId}" style="cursor: pointer; margin: 0; font-size: 11px;">${filename}</label>
+                        `;
+                        checkboxesDiv.appendChild(item);
+                    });
+                    filesList.style.display = 'block';
+                } else {
+                    checkboxesDiv.innerHTML = '<div style="font-size: 11px; color: #64748b;">No files found for this user</div>';
+                    filesList.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error loading user files:', error);
+                alert(`Error loading files: ${error.message}`);
+            }
+        }
+        
+        // Get selected chat RAG filenames
+        function getSelectedChatRagFilenames() {
+            const filenames = [];
+            document.querySelectorAll('input[type="checkbox"][id^="chat_rag_file_"]:checked').forEach(cb => {
+                filenames.push(cb.value);
+            });
+            return filenames;
+        }
+        
+        // Get RAG filter metadata for chat requests
+        function getRagFilterMetadataForChat() {
+            const filters = {};
+            
+            // Get selected indexes from RAG search bar
+            const selectedIndexes = getSelectedRagIndexes();
+            if (selectedIndexes.length > 0) {
+                filters.index_name = selectedIndexes;
+            }
+            
+            // Get selected classifications from RAG search bar
+            const selectedClassifications = getSelectedRagClassifications();
+            if (selectedClassifications.length > 0) {
+                // Use "classification" (singular) - backend will map to "classifications" (plural)
+                filters.classification = selectedClassifications;
+            }
+            
+            // Get user_id from chat RAG settings (preferred) or RAG search bar
+            const chatUserId = document.getElementById('chatRagUserId').value.trim();
+            const ragUserId = document.getElementById('ragUserId').value.trim();
+            const userId = chatUserId || ragUserId;
+            if (userId) {
+                filters.user_id = userId;
+            }
+            
+            // Get selected filenames from chat RAG settings (preferred) or RAG search bar
+            const chatFilenames = getSelectedChatRagFilenames();
+            const ragFilenames = getSelectedRagFilenames();
+            const selectedFilenames = chatFilenames.length > 0 ? chatFilenames : ragFilenames;
+            if (selectedFilenames.length > 0) {
+                filters.filename = selectedFilenames;
+            }
+            
+            // Return filters if we have:
+            // 1. index_name (for database indexes like qadha, contracts)
+            // 2. user_id or filename (for user-uploaded documents - backend will auto-select user-index-document)
+            // 3. Any other filter combination
+            return Object.keys(filters).length > 0 ? filters : null;
+        }
+        
+        // Load user files for RAG search
+        async function loadUserFiles() {
+            const userId = document.getElementById('ragUserId').value.trim();
+            if (!userId) {
+                alert('Please enter a user ID');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE}/rag/user-files/list/${encodeURIComponent(userId)}`);
+                if (!response.ok) {
+                    throw new Error(`Failed to load files: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                const filesList = document.getElementById('ragUserFilesList');
+                const checkboxesDiv = document.getElementById('ragUserFilesCheckboxes');
+                
+                if (data.files && data.files.length > 0) {
+                    checkboxesDiv.innerHTML = '';
+                    data.files.forEach(filename => {
+                        const item = document.createElement('div');
+                        item.className = 'rag-filter-checkbox-item';
+                        item.onclick = () => toggleRagCheckbox(item);
+                        const checkboxId = `rag_file_${filename.replace(/[^a-zA-Z0-9]/g, '_')}`;
+                        item.innerHTML = `
+                            <input type="checkbox" id="${checkboxId}" value="${filename}">
+                            <label for="${checkboxId}">${filename}</label>
+                        `;
+                        checkboxesDiv.appendChild(item);
+                    });
+                    filesList.style.display = 'block';
+                } else {
+                    checkboxesDiv.innerHTML = '<div style="font-size: 11px; color: #64748b;">No files found for this user</div>';
+                    filesList.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error loading user files:', error);
+                alert(`Error loading files: ${error.message}`);
+            }
+        }
+        
+        // Get selected RAG filenames
+        function getSelectedRagFilenames() {
+            const filenames = [];
+            document.querySelectorAll('input[type="checkbox"][id^="rag_file_"]:checked').forEach(cb => {
+                filenames.push(cb.value);
+            });
+            return filenames;
+        }
+        
+        // Perform RAG search
+        async function performRagSearch() {
+            const query = document.getElementById('ragSearchQuery').value.trim();
+            if (!query) {
+                addMessage('system', 'Please enter a search query');
+                return;
+            }
+            
+            const selectedIndexes = getSelectedRagIndexes();
+            if (selectedIndexes.length === 0) {
+                addMessage('system', 'Please select at least one index to search');
+                return;
+            }
+            
+            const selectedClassifications = getSelectedRagClassifications();
+            const userId = document.getElementById('ragUserId').value.trim();
+            const selectedFilenames = getSelectedRagFilenames();
+            const topK = parseInt(document.getElementById('ragSearchTopK').value) || 2;
+            
+            // Add user query to chat
+            addMessage('user', `[RAG Search] ${query}`);
+            
+            try {
+                const requestData = {
+                    query: query,
+                    top_k: topK,
+                    index_names: selectedIndexes,
+                    min_similarity: 0.0
+                };
+                
+                if (selectedClassifications.length > 0) {
+                    requestData.classifications = selectedClassifications;
+                }
+                
+                if (userId) {
+                    requestData.user_id = userId;
+                }
+                
+                if (selectedFilenames.length > 0) {
+                    requestData.filenames = selectedFilenames;
+                }
+                
+                const response = await fetch(`${API_BASE}/rag/database/query`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestData)
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ detail: 'Search failed' }));
+                    throw new Error(errorData.detail || `HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                // Display results in chat
+                if (!data.results || data.results.length === 0) {
+                    addMessage('assistant', 'No results found for your RAG search query.');
+                    return;
+                }
+                
+                let resultMessage = `[RAG Search Results]\n\n`;
+                resultMessage += `Found ${data.total_results} result(s)\n\n`;
+                resultMessage += `Indexes searched: ${selectedIndexes.join(', ')}\n`;
+                if (selectedClassifications.length > 0) {
+                    resultMessage += `Classifications: ${selectedClassifications.join(', ')}\n`;
+                }
+                resultMessage += `\n${'='.repeat(60)}\n\n`;
+                
+                data.results.forEach((result, index) => {
+                    const filename = result.filename || 'Unknown';
+                    const indexName = result.index_name || 'unknown';
+                    const pageNumber = result.page_number || 1;
+                    const chunkNumber = result.chunk_number || 1;
+                    const content = result.content || '';
+                    const s3Location = result.s3_location || {};
+                    const s3Path = s3Location.s3_path || '';
+                    const fullPath = s3Path || filename;
+                    
+                    resultMessage += `Result #${index + 1}:\n`;
+                    resultMessage += `File: ${filename}\n`;
+                    resultMessage += `Index: ${indexName}\n`;
+                    resultMessage += `Page: ${pageNumber}, Chunk: ${chunkNumber}\n`;
+                    resultMessage += `Path: ${fullPath}\n`;
+                    resultMessage += `\nContent:\n${content}\n`;
+                    resultMessage += `\n${'='.repeat(60)}\n\n`;
+                });
+                
+                addMessage('assistant', resultMessage);
+                
+            } catch (error) {
+                console.error('RAG Search error:', error);
+                addMessage('system', `RAG Search Error: ${error.message}`);
+            }
+        }
+        
+        // Update value displays
+        document.getElementById('temperature').addEventListener('input', (e) => {
+            document.getElementById('tempValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('topP').addEventListener('input', (e) => {
+            document.getElementById('topPValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('maxTokens').addEventListener('input', (e) => {
+            document.getElementById('maxTokensValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('frequencyPenalty').addEventListener('input', (e) => {
+            document.getElementById('freqPenValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('presencePenalty').addEventListener('input', (e) => {
+            document.getElementById('presPenValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('topK').addEventListener('input', (e) => {
+            document.getElementById('topKValue').textContent = e.target.value;
+        });
+        
+        document.getElementById('ragTopK').addEventListener('input', (e) => {
+            document.getElementById('ragTopKValue').textContent = e.target.value;
+        });
+        
+        // Load uploaded files on page load
+        window.addEventListener('load', async () => {
+            await loadUploadedFiles();
+        });
+        
+        // Show model info on selection and toggle parameters based on provider
+        document.getElementById('modelSelect').addEventListener('change', (e) => {
+            const select = e.target;
+            const option = select.options[select.selectedIndex];
+            const modelId = option.value;
+            
+            // Check if it's a thinking model
+            const isThinking = option.dataset.isThinking === 'true';
+            
+            // Show/hide thinking mode info box
+            const thinkingInfo = document.getElementById('thinkingModeInfo');
+            if (thinkingInfo) {
+                thinkingInfo.style.display = isThinking ? 'block' : 'none';
+            }
+            
+            // Show model pricing info
+            if (option.dataset.pricing) {
+                const thinkingBadge = isThinking ? '<span style="background: #10b981; color: white; padding: 2px 8px; border-radius: 4px; font-size: 11px; margin-left: 8px;">🧠 THINKING MODE</span>' : '';
+                const info = `Input: $${option.dataset.inputPrice}/M tokens | Output: $${option.dataset.outputPrice}/M tokens ${thinkingBadge}<br>Context: ${option.dataset.inputContext} in / ${option.dataset.outputContext} out`;
+                document.getElementById('modelInfo').innerHTML = info;
+            } else {
+                document.getElementById('modelInfo').innerHTML = '';
+            }
+            
+            // Show/hide parameters based on model provider
+            const isGemini = modelId.toLowerCase().startsWith('gemini') || modelId.toLowerCase().startsWith('learnlm') || modelId.toLowerCase().includes('nora');
+            const isO1 = modelId.toLowerCase().startsWith('o1') || modelId.toLowerCase().startsWith('o3') || (modelId.toLowerCase().includes('thinking') && !isGemini);
+            
+            // O1/O3 models don't support temperature, frequency_penalty, presence_penalty
+            // Hide these controls for reasoning models
+            if (isO1) {
+                document.getElementById('temperatureGroup').style.display = 'none';
+                document.getElementById('topPGroup').style.display = 'none';
+                document.getElementById('frequencyPenaltyGroup').style.display = 'none';
+                document.getElementById('presencePenaltyGroup').style.display = 'none';
+                document.getElementById('topKGroup').style.display = 'none';
+            } else {
+                // Show appropriate controls for regular models
+                document.getElementById('temperatureGroup').style.display = 'block';
+                document.getElementById('topPGroup').style.display = 'block';
+                document.getElementById('frequencyPenaltyGroup').style.display = isGemini ? 'none' : 'block';
+                document.getElementById('presencePenaltyGroup').style.display = isGemini ? 'none' : 'block';
+                document.getElementById('topKGroup').style.display = isGemini ? 'block' : 'none';
+            }
+        });
+        
+        // Allow Enter to send (Shift+Enter for new line)
+        document.getElementById('userInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+        
+        async function loadModels() {
+            try {
+                const response = await fetch(`${API_BASE}/chat/list_models`);
+                const data = await response.json();
+                
+                const select = document.getElementById('modelSelect');
+                select.innerHTML = '';
+                
+                data.models.forEach(model => {
+                    const option = document.createElement('option');
+                    option.value = model.id;
+                    
+                    // Add emoji indicator for thinking models
+                    const isThinking = model.id.toLowerCase().includes('thinking');
+                    const emoji = isThinking ? '🧠 ' : '';
+                    option.textContent = emoji + model.name;
+                    
+                    option.dataset.pricing = JSON.stringify(model.pricing);
+                    option.dataset.inputPrice = model.pricing.input;
+                    option.dataset.outputPrice = model.pricing.output;
+                    option.dataset.inputContext = model.context_length.input;
+                    option.dataset.outputContext = model.context_length.output;
+                    option.dataset.isThinking = isThinking;
+                    select.appendChild(option);
+                });
+                
+                // Trigger change event to show first model info
+                select.dispatchEvent(new Event('change'));
+                
+            } catch (error) {
+                console.error('Error loading models:', error);
+                alert('Failed to load models. Make sure the API is running.');
+            }
+        }
+        
+        function addMessage(role, content, tokenUsage = null) {
+            messages.push({ role, content });
+            
+            const chatArea = document.getElementById('chatArea');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}`;
+            
+            let tokenHtml = '';
+            if (tokenUsage) {
+                tokenHtml = `
+                    <div class="token-usage">
+                        <strong>Token Usage:</strong><br>
+                        Input: ${tokenUsage.prompt_tokens || 0} tokens | 
+                        Output: ${tokenUsage.completion_tokens || 0} tokens | 
+                        Total: ${tokenUsage.total_tokens || 0} tokens
+                    </div>
+                `;
+            }
+            
+            let actionButtons = '';
+            if (role === 'assistant') {
+                actionButtons = `
+                    <div style="margin-top: 10px;">
+                        <button onclick="textToSpeechFromMessage(this)" style="font-size: 11px; padding: 5px 10px; width: auto; margin-right: 5px;">
+                            Play Audio
+                        </button>
+                    </div>
+                `;
+            }
+            
+            messageDiv.innerHTML = `
+                <div class="message-role">${role}</div>
+                <div class="message-content">${escapeHtml(content)}</div>
+                ${actionButtons}
+                ${tokenHtml}
+            `;
+            chatArea.appendChild(messageDiv);
+            chatArea.scrollTop = chatArea.scrollHeight;
+            
+            return messageDiv;
+        }
+        
+        function addTokenUsageToLastMessage(tokenUsage) {
+            const chatArea = document.getElementById('chatArea');
+            const lastMessage = chatArea.lastElementChild;
+            if (lastMessage && tokenUsage) {
+                const tokenHtml = `
+                    <div class="token-usage">
+                        <strong>Token Usage:</strong><br>
+                        Input: ${tokenUsage.prompt_tokens || 0} tokens | 
+                        Output: ${tokenUsage.completion_tokens || 0} tokens 
+                    </div>
+                `;
+                lastMessage.insertAdjacentHTML('beforeend', tokenHtml);
+                chatArea.scrollTop = chatArea.scrollHeight;
+            }
+        }
+        
+        function updateLastMessage(content) {
+            const chatArea = document.getElementById('chatArea');
+            const lastMessage = chatArea.lastElementChild;
+            if (lastMessage) {
+                const contentDiv = lastMessage.querySelector('.message-content');
+                contentDiv.textContent = content;
+            }
+        }
+        
+        async function sendMessage() {
+            if (isGenerating) return;
+            
+            const input = document.getElementById('userInput');
+            const userMessage = input.value.trim();
+            
+            if (!userMessage) return;
+            
+            const model = document.getElementById('modelSelect').value;
+            if (!model) {
+                alert('Please select a model');
+                return;
+            }
+            
+            // Add user message
+            addMessage('user', userMessage);
+            input.value = '';
+            
+            // Disable send button
+            isGenerating = true;
+            const sendBtn = document.getElementById('sendBtn');
+            sendBtn.disabled = true;
+            sendBtn.textContent = 'Generating...';
+            
+            const stream = document.getElementById('streamToggle').checked;
+            const useRag = document.getElementById('useRagToggle').checked;
+            
+            // Get RAG filter metadata if RAG is enabled
+            let ragFilterMetadata = null;
+            if (useRag) {
+                ragFilterMetadata = getRagFilterMetadataForChat();
+                
+                if (!ragFilterMetadata) {
+                    // No filters at all - warn user
+                    addMessage('system', '[WARNING] ⚠️ RAG is enabled but no indexes or documents selected. Please either:\n- Select indexes (Qadha, Contracts, etc.) in RAG search section, OR\n- Select your uploaded files, OR\n- Disable RAG');
+                    ragFilterMetadata = null;
+                } else if (ragFilterMetadata.index_name && ragFilterMetadata.index_name.length > 0) {
+                    // Database indexes selected
+                    const selectedIndexes = ragFilterMetadata.index_name.join(', ');
+                    addMessage('system', `[RAG] 🔍 Searching database indexes: ${selectedIndexes}...`);
+                } else if (ragFilterMetadata.user_id || ragFilterMetadata.filename) {
+                    // User files selected
+                    const fileInfo = ragFilterMetadata.filename ? 
+                        `files: ${Array.isArray(ragFilterMetadata.filename) ? ragFilterMetadata.filename.join(', ') : ragFilterMetadata.filename}` :
+                        `user: ${ragFilterMetadata.user_id}`;
+                    addMessage('system', `[RAG] 🔍 Searching your uploaded documents (${fileInfo})...`);
+                }
+            }
+            
+            // Build request data based on model type
+            const isGemini = model.toLowerCase().startsWith('gemini') || model.toLowerCase().startsWith('learnlm');
+            const requestData = {
+                model: model,
+                messages: messages,
+                temperature: parseFloat(document.getElementById('temperature').value),
+                top_p: parseFloat(document.getElementById('topP').value),
+                max_tokens: parseInt(document.getElementById('maxTokens').value),
+                stream: stream,
+                web_search_mode: document.getElementById('webSearchMode').value,
+                use_rag: useRag,
+                rag_top_k: useRag ? 2 : parseInt(document.getElementById('ragTopK').value), // Use 2 for RAG in chat
+                rag_filter_metadata: ragFilterMetadata
+            };
+            
+            // Add provider-specific parameters
+            if (isGemini) {
+                requestData.top_k = parseInt(document.getElementById('topK').value);
+            } else {
+                requestData.frequency_penalty = parseFloat(document.getElementById('frequencyPenalty').value);
+                requestData.presence_penalty = parseFloat(document.getElementById('presencePenalty').value);
+            }
+            
+            try {
+                if (stream) {
+                    await handleStreamingResponse(requestData);
+                } else {
+                    await handleNonStreamingResponse(requestData);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                addMessage('system', `Error: ${error.message}`);
+            } finally {
+                isGenerating = false;
+                sendBtn.disabled = false;
+                sendBtn.textContent = 'Send';
+            }
+        }
+        
+        async function handleStreamingResponse(requestData) {
+            const response = await fetch(`${API_BASE}/chat/model_sse`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData)
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const reader = response.body.getReader();
+            const decoder = new TextDecoder();
+            let assistantMessage = '';
+            let messageDiv = null;
+            let tokenUsage = null;
+            
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                
+                const chunk = decoder.decode(value);
+                const lines = chunk.split('\n');
+                
+                let currentEvent = null;
+                for (const line of lines) {
+                    // Handle SSE event lines
+                    if (line.startsWith('event: ')) {
+                        currentEvent = line.slice(7).trim();
+                        continue;
+                    }
+                    
+                    if (line.startsWith('data: ')) {
+                        const data = line.slice(6);
+                        
+                        if (data === '[DONE]') {
+                            if (assistantMessage) {
+                                messages.push({ role: 'assistant', content: assistantMessage });
+                            }
+                            // Display token usage if available
+                            if (tokenUsage) {
+                                addTokenUsageToLastMessage(tokenUsage);
+                            }
+                            continue;
+                        }
+                        
+                        try {
+                            const parsed = JSON.parse(data);
+                            
+                            // Handle error events (from event: error)
+                            if (currentEvent === 'error') {
+                                const errorData = typeof parsed.data === 'string' ? JSON.parse(parsed.data) : parsed;
+                                const errorMsg = errorData.error || errorData.error_en || 'RAG search issue occurred';
+                                addMessage('system', `[WARNING] ${errorMsg}`);
+                                // Don't continue/break - allow model response to come through
+                                currentEvent = null; // Reset event
+                                // Continue to next iteration to process model response
+                            }
+                            
+                            // Handle errors in data
+                            if (parsed.error) {
+                                addMessage('system', `[ERROR] ${parsed.error.message || parsed.error}`);
+                                // Don't throw - let the model still try to respond
+                            }
+                            
+                            // Handle token usage (from our special event or from usage chunk)
+                            if (parsed.type === 'token_usage' && parsed.usage) {
+                                tokenUsage = parsed.usage;
+                            } else if (parsed.usage) {
+                                tokenUsage = parsed.usage;
+                            }
+                            
+                            // Handle RAG results
+                            if (parsed.rag && parsed.rag.used) {
+                                let ragMessage = `[RAG] ✅ Retrieved ${parsed.rag.chunks_retrieved} document chunks from Pinecone\n\n`;
+                                if (parsed.rag.results && parsed.rag.results.length > 0) {
+                                    ragMessage += `Retrieved Documents:\n`;
+                                    ragMessage += `${'='.repeat(60)}\n`;
+                                    parsed.rag.results.forEach((chunk, idx) => {
+                                        const filename = chunk.filename || 'Unknown';
+                                        const indexName = chunk.index_name || 'unknown';
+                                        const pageNumber = chunk.page_number || 1;
+                                        const chunkNumber = chunk.chunk_number || 1;
+                                        const content = chunk.content || '';
+                                        const s3Location = chunk.s3_location || {};
+                                        const s3Path = s3Location.s3_path || '';
+                                        const fullPath = s3Path || filename;
+                                        
+                                        ragMessage += `\n[Result ${idx + 1}]\n`;
+                                        ragMessage += `File: ${filename}\n`;
+                                        ragMessage += `Index: ${indexName}\n`;
+                                        ragMessage += `Page: ${pageNumber}, Chunk: ${chunkNumber}\n`;
+                                        ragMessage += `Path: ${fullPath}\n`;
+                                        ragMessage += `\nContent:\n${content.substring(0, 500)}${content.length > 500 ? '...' : ''}\n`;
+                                        ragMessage += `${'='.repeat(60)}\n`;
+                                    });
+                                    ragMessage += `\n[INFO] The model is using these retrieved documents to answer your question.`;
+                                }
+                                addMessage('system', ragMessage);
+                            } else if (parsed.rag && parsed.rag.error) {
+                                addMessage('system', `[RAG Error] ${parsed.rag.error}`);
+                            }
+                            
+                            // Handle web search results (both OpenAI and Gemini)
+                            if (parsed.web_search && parsed.web_search.used) {
+                                addMessage('system', '[WEB SEARCH] Web Search Results:\n\n' + parsed.web_search.results);
+                            }
+                            
+                            // Handle content chunks (both OpenAI and Gemini)
+                            if (parsed.choices && parsed.choices[0] && parsed.choices[0].delta && parsed.choices[0].delta.content) {
+                                assistantMessage += parsed.choices[0].delta.content;
+                                
+                                if (!messageDiv) {
+                                    messageDiv = addMessage('assistant', assistantMessage);
+                                } else {
+                                    updateLastMessage(assistantMessage);
+                                }
+                            }
+                        } catch (e) {
+                            console.error('Error parsing SSE data:', e);
+                        }
+                    }
+                }
+            }
+        }
+        
+        async function handleNonStreamingResponse(requestData) {
+            const response = await fetch(`${API_BASE}/chat/model_sse`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData)
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data.error) {
+                throw new Error(data.error.message || data.error);
+            }
+            
+            // Display RAG results if available
+            if (data.rag && data.rag.used) {
+                let ragMessage = `[RAG] ✅ Retrieved ${data.rag.chunks_retrieved} document chunks from Pinecone\n\n`;
+                if (data.rag.results && data.rag.results.length > 0) {
+                    ragMessage += `Retrieved Documents:\n`;
+                    ragMessage += `${'='.repeat(60)}\n`;
+                    data.rag.results.forEach((chunk, idx) => {
+                        const filename = chunk.filename || 'Unknown';
+                        const indexName = chunk.index_name || 'unknown';
+                        const pageNumber = chunk.page_number || 1;
+                        const chunkNumber = chunk.chunk_number || 1;
+                        const content = chunk.content || '';
+                        const s3Location = chunk.s3_location || {};
+                        const s3Path = s3Location.s3_path || '';
+                        const fullPath = s3Path || filename;
+                        
+                        ragMessage += `\n[Result ${idx + 1}]\n`;
+                        ragMessage += `File: ${filename}\n`;
+                        ragMessage += `Index: ${indexName}\n`;
+                        ragMessage += `Page: ${pageNumber}, Chunk: ${chunkNumber}\n`;
+                        ragMessage += `Path: ${fullPath}\n`;
+                        ragMessage += `\nContent:\n${content.substring(0, 500)}${content.length > 500 ? '...' : ''}\n`;
+                        ragMessage += `${'='.repeat(60)}\n`;
+                    });
+                    ragMessage += `\n[INFO] The model is using these retrieved documents to answer your question.`;
+                }
+                addMessage('system', ragMessage);
+            } else if (data.rag && data.rag.error) {
+                addMessage('system', `[RAG Error] ${data.rag.error}`);
+            }
+            
+            // Display web search results if available
+            if (data.web_search && data.web_search.used) {
+                addMessage('system', 'Web Search Results:\n\n' + data.web_search.results);
+            }
+            
+            const assistantMessage = data.choices[0].message.content;
+            const tokenUsage = data.usage || null;
+            addMessage('assistant', assistantMessage, tokenUsage);
+        }
+        
+        async function uploadFile() {
+            const fileInput = document.getElementById('fileUpload');
+            const userIdInput = document.getElementById('uploadUserId');
+            const file = fileInput.files[0];
+            const userId = userIdInput.value.trim();
+            
+            if (!file) {
+                showUploadStatus('Please select a file first', 'error');
+                return;
+            }
+            
+            if (!userId) {
+                showUploadStatus('Please enter a user ID', 'error');
+                return;
+            }
+            
+            // Check file size (limit to 50MB)
+            const maxSize = 50 * 1024 * 1024; // 50MB
+            if (file.size > maxSize) {
+                showUploadStatus('File too large. Maximum size is 50MB', 'error');
+                return;
+            }
+            
+            const uploadBtn = document.getElementById('uploadBtn');
+            
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = 'Uploading...';
+            showUploadStatus(`Uploading ${file.name} for user ${userId} (${(file.size / 1024 / 1024).toFixed(2)} MB)...`, 'uploading');
+            
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('user_id', userId);
+                
+                console.log('Uploading file:', file.name, 'Size:', file.size, 'Type:', file.type, 'User ID:', userId);
+                console.log('API URL:', `${API_BASE}/rag/user-files/upload`);
+                
+                const response = await fetch(`${API_BASE}/rag/user-files/upload`, {
+                    method: 'POST',
+                    body: formData
+                    // Don't set Content-Type header - let browser set it with boundary for FormData
+                });
+                
+                console.log('Response status:', response.status, response.statusText);
+                
+                if (!response.ok) {
+                    let errorMessage = `HTTP error! status: ${response.status}`;
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.detail || errorData.error || errorMessage;
+                        console.error('Error response:', errorData);
+                    } catch (e) {
+                        // If response is not JSON, try to get text
+                        try {
+                            const errorText = await response.text();
+                            errorMessage = errorText || errorMessage;
+                            console.error('Error response text:', errorText);
+                        } catch (e2) {
+                            console.error('Could not parse error response');
+                        }
+                    }
+                    throw new Error(errorMessage);
+                }
+                
+                const data = await response.json();
+                console.log('Upload success:', data);
+                
+                showUploadStatus(
+                    `Uploaded: ${data.filename} (${data.pages_count} pages, ${data.chunks_count} chunks)`, 
+                    'success'
+                );
+                
+                // Clear file input
+                fileInput.value = '';
+                
+                // Reload uploaded files list
+                await loadUploadedFiles();
+                
+            } catch (error) {
+                console.error('Upload error:', error);
+                let errorMsg = error.message || 'Unknown error occurred';
+                
+                // Handle network errors
+                if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                    errorMsg = 'Network error: Could not connect to server. Check if the API is running.';
+                }
+                
+                showUploadStatus(`Error: ${errorMsg}`, 'error');
+            } finally {
+                uploadBtn.disabled = false;
+                uploadBtn.textContent = 'Upload Document';
+            }
+        }
+        
+        function showUploadStatus(message, type) {
+            const statusDiv = document.getElementById('uploadStatus');
+            statusDiv.textContent = message;
+            statusDiv.className = `upload-status ${type}`;
+            
+            // Clear success/error messages after 5 seconds
+            if (type === 'success' || type === 'error') {
+                setTimeout(() => {
+                    statusDiv.textContent = '';
+                    statusDiv.className = 'upload-status';
+                }, 5000);
+            }
+        }
+        
+        async function loadUploadedFiles() {
+            // Note: This would require a list endpoint in the API
+            // For now, we'll just show upload status
+            // You can implement this if you add a /rag/list endpoint
+        }
+        
+        function clearChat() {
+            messages = [];
+            document.getElementById('chatArea').innerHTML = '';
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Speech functionality
+        let mediaRecorder = null;
+        let audioChunks = [];
+        let isRecording = false;
+        
+        async function textToSpeech() {
+            const chatArea = document.getElementById('chatArea');
+            const messages = chatArea.querySelectorAll('.message.assistant');
+            
+            if (messages.length === 0) {
+                showSpeechStatus('No assistant message to convert to speech', 'error');
+                return;
+            }
+            
+            // Get the last assistant message
+            const lastMessage = messages[messages.length - 1];
+            const messageContent = lastMessage.querySelector('.message-content').textContent;
+            
+            if (!messageContent || !messageContent.trim()) {
+                showSpeechStatus('No text content found in assistant message', 'error');
+                return;
+            }
+            
+            const ttsBtn = document.getElementById('ttsBtn');
+            ttsBtn.disabled = true;
+            ttsBtn.textContent = 'Generating...';
+            showSpeechStatus('Generating speech...', 'uploading');
+            
+            try {
+                const response = await fetch(`${API_BASE}/speech/text-to-speech`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        text: messageContent,
+                        model: document.getElementById('ttsModel').value,
+                        voice: document.getElementById('ttsVoice').value,
+                        response_format: 'mp3',
+                        speed: 1.0
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ detail: `HTTP error! status: ${response.status}` }));
+                    throw new Error(errorData.detail || errorData.error || 'Failed to generate speech');
+                }
+                
+                const audioBlob = await response.blob();
+                const audioUrl = URL.createObjectURL(audioBlob);
+                
+                const audioPlayer = document.getElementById('audioPlayer');
+                audioPlayer.src = audioUrl;
+                audioPlayer.style.display = 'block';
+                audioPlayer.play();
+                
+                showSpeechStatus('Speech generated successfully', 'success');
+                
+                // Clean up URL after playback
+                audioPlayer.addEventListener('ended', () => {
+                    URL.revokeObjectURL(audioUrl);
+                });
+                
+            } catch (error) {
+                console.error('TTS Error:', error);
+                showSpeechStatus(`Error: ${error.message}`, 'error');
+            } finally {
+                ttsBtn.disabled = false;
+                ttsBtn.textContent = 'Text to Speech';
+            }
+        }
+        
+        async function toggleRecording() {
+            if (isRecording) {
+                stopRecording();
+                return;
+            }
+            
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+                
+                mediaRecorder.ondataavailable = (event) => {
+                    audioChunks.push(event.data);
+                };
+                
+                mediaRecorder.onstop = async () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    await transcribeAudio(audioBlob);
+                    
+                    // Stop all tracks
+                    stream.getTracks().forEach(track => track.stop());
+                };
+                
+                mediaRecorder.start();
+                isRecording = true;
+                
+                document.getElementById('recordBtn').textContent = 'Recording...';
+                document.getElementById('recordBtn').style.display = 'none';
+                document.getElementById('stopRecordBtn').style.display = 'block';
+                showSpeechStatus('<span class="recording-indicator"></span>Recording...', 'uploading');
+                
+            } catch (error) {
+                console.error('Error accessing microphone:', error);
+                showSpeechStatus('Error: Could not access microphone. Please allow microphone access.', 'error');
+            }
+        }
+        
+        function stopRecording() {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+                
+                document.getElementById('recordBtn').textContent = 'Start Recording';
+                document.getElementById('recordBtn').style.display = 'block';
+                document.getElementById('stopRecordBtn').style.display = 'none';
+                showSpeechStatus('Processing audio...', 'uploading');
+            }
+        }
+        
+        async function transcribeAudio(audioBlob) {
+            try {
+                const formData = new FormData();
+                formData.append('file', audioBlob, 'recording.webm');
+                formData.append('response_format', 'json');
+                formData.append('temperature', '0.0');
+                
+                showSpeechStatus('Transcribing audio...', 'uploading');
+                
+                const response = await fetch(`${API_BASE}/speech/speech-to-text`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ detail: `HTTP error! status: ${response.status}` }));
+                    throw new Error(errorData.detail || errorData.error || 'Failed to transcribe audio');
+                }
+                
+                const data = await response.json();
+                
+                if (data.text) {
+                    // Set the transcribed text in the input field
+                    document.getElementById('userInput').value = data.text;
+                    showSpeechStatus(`Transcribed: "${data.text.substring(0, 50)}${data.text.length > 50 ? '...' : ''}"`, 'success');
+                } else {
+                    throw new Error('No text in transcription response');
+                }
+                
+            } catch (error) {
+                console.error('STT Error:', error);
+                showSpeechStatus(`Error: ${error.message}`, 'error');
+            }
+        }
+        
+        async function textToSpeechFromMessage(button) {
+            const messageDiv = button.closest('.message');
+            const messageContent = messageDiv.querySelector('.message-content').textContent;
+            
+            if (!messageContent || !messageContent.trim()) {
+                showSpeechStatus('No text content found', 'error');
+                return;
+            }
+            
+            button.disabled = true;
+            button.textContent = 'Generating...';
+            showSpeechStatus('Generating speech...', 'uploading');
+            
+            try {
+                const response = await fetch(`${API_BASE}/speech/text-to-speech`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        text: messageContent,
+                        model: document.getElementById('ttsModel').value,
+                        voice: document.getElementById('ttsVoice').value,
+                        response_format: 'mp3',
+                        speed: 1.0
+                    })
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ detail: `HTTP error! status: ${response.status}` }));
+                    throw new Error(errorData.detail || errorData.error || 'Failed to generate speech');
+                }
+                
+                const audioBlob = await response.blob();
+                const audioUrl = URL.createObjectURL(audioBlob);
+                
+                // Create audio element for this message
+                let audioElement = messageDiv.querySelector('audio');
+                if (!audioElement) {
+                    audioElement = document.createElement('audio');
+                    audioElement.controls = true;
+                    audioElement.style.width = '100%';
+                    audioElement.style.marginTop = '10px';
+                    messageDiv.appendChild(audioElement);
+                }
+                
+                audioElement.src = audioUrl;
+                audioElement.play();
+                
+                showSpeechStatus('Speech generated', 'success');
+                button.textContent = 'Play Again';
+                
+                // Clean up URL after playback
+                audioElement.addEventListener('ended', () => {
+                    URL.revokeObjectURL(audioUrl);
+                });
+                
+            } catch (error) {
+                console.error('TTS Error:', error);
+                showSpeechStatus(`Error: ${error.message}`, 'error');
+                button.textContent = 'Play Audio';
+            } finally {
+                button.disabled = false;
+            }
+        }
+        
+        async function transcribeUploadedAudio() {
+            const fileInput = document.getElementById('audioFileUpload');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showSpeechStatus('Please select an audio file first', 'error');
+                return;
+            }
+            
+            // Check file size (limit to 25MB for audio)
+            const maxSize = 25 * 1024 * 1024; // 25MB
+            if (file.size > maxSize) {
+                showSpeechStatus('File too large. Maximum size is 25MB', 'error');
+                return;
+            }
+            
+            showSpeechStatus('Transcribing audio file...', 'uploading');
+            
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('response_format', 'json');
+                formData.append('temperature', '0.0');
+                
+                const response = await fetch(`${API_BASE}/speech/speech-to-text`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ detail: `HTTP error! status: ${response.status}` }));
+                    throw new Error(errorData.detail || errorData.error || 'Failed to transcribe audio');
+                }
+                
+                const data = await response.json();
+                
+                if (data.text) {
+                    // Set the transcribed text in the input field
+                    document.getElementById('userInput').value = data.text;
+                    showSpeechStatus(`Transcribed: "${data.text.substring(0, 50)}${data.text.length > 50 ? '...' : ''}"`, 'success');
+                    fileInput.value = ''; // Clear file input
+                } else {
+                    throw new Error('No text in transcription response');
+                }
+                
+            } catch (error) {
+                console.error('STT Error:', error);
+                showSpeechStatus(`Error: ${error.message}`, 'error');
+            }
+        }
+        
+        function showSpeechStatus(message, type) {
+            const statusDiv = document.getElementById('speechStatus');
+            statusDiv.innerHTML = message;
+            statusDiv.className = `upload-status ${type}`;
+            
+            // Clear success/error messages after 5 seconds
+            if (type === 'success' || type === 'error') {
+                setTimeout(() => {
+                    statusDiv.innerHTML = '';
+                    statusDiv.className = 'upload-status';
+                }, 5000);
+            }
+        }
+    </script>
+</body>
+</html>
+

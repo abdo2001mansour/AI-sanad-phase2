@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic Tools - AI Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: #f5f7fa;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        header {
+            background: #60a5fa;
+            color: white;
+            padding: 24px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .tabs {
+            display: flex;
+            background: #eff6ff;
+            border-bottom: 2px solid #dbeafe;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            color: #3b82f6;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            background: #dbeafe;
+        }
+
+        .tab.active {
+            background: white;
+            color: #60a5fa;
+            border-bottom: 3px solid #60a5fa;
+            margin-bottom: -2px;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 32px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #3b82f6;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dbeafe;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        textarea:focus, select:focus {
+            outline: none;
+            border-color: #60a5fa;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #60a5fa;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover:not(:disabled) {
+            background: #3b82f6;
+        }
+
+        button:disabled {
+            background: #93c5fd;
+            cursor: not-allowed;
+        }
+
+        .result-box {
+            margin-top: 24px;
+            padding: 20px;
+            background: #eff6ff;
+            border-radius: 6px;
+            border-left: 4px solid #60a5fa;
+            display: none;
+        }
+
+        .result-box.show {
+            display: block;
+        }
+
+        .result-box.success {
+            background: #f0fdf4;
+            border-left-color: #10b981;
+        }
+
+        .result-box.error {
+            background: #fef2f2;
+            border-left-color: #ef4444;
+        }
+
+        .result-title {
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #3b82f6;
+            font-size: 15px;
+        }
+
+        .result-box.success .result-title {
+            color: #059669;
+        }
+
+        .result-box.error .result-title {
+            color: #dc2626;
+        }
+
+        .result-content {
+            color: #374151;
+            line-height: 1.7;
+            word-wrap: break-word;
+        }
+
+        /* Markdown formatting styles */
+        .result-content h2, .result-content h3, .result-content h4, .result-content h5 {
+            color: #3b82f6;
+            margin-top: 16px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .result-content h2 { font-size: 20px; }
+        .result-content h3 { font-size: 18px; }
+        .result-content h4 { font-size: 16px; }
+        .result-content h5 { font-size: 14px; }
+
+        .result-content strong {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .result-content code {
+            background: #eff6ff;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #60a5fa;
+        }
+
+        .result-content pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 16px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin: 12px 0;
+        }
+
+        .result-content pre code {
+            background: transparent;
+            color: #e2e8f0;
+            padding: 0;
+        }
+
+        .result-content li {
+            margin: 8px 0;
+            padding-left: 24px;
+            position: relative;
+        }
+
+        .result-content li.numbered {
+            list-style: none;
+        }
+
+        .result-content li.numbered .list-num {
+            position: absolute;
+            left: 0;
+            color: #60a5fa;
+            font-weight: 600;
+        }
+
+        .result-content li.bullet::before {
+            content: "•";
+            position: absolute;
+            left: 8px;
+            color: #60a5fa;
+            font-weight: bold;
+        }
+
+        .result-content a {
+            color: #60a5fa;
+            text-decoration: none;
+            border-bottom: 1px solid #93c5fd;
+        }
+
+        .result-content a:hover {
+            border-bottom-color: #60a5fa;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ffffff;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .examples {
+            margin: 16px 0;
+            padding: 12px;
+            background: #eff6ff;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .examples strong {
+            color: #3b82f6;
+            font-weight: 500;
+        }
+
+        .example-btn {
+            display: inline-block;
+            margin: 4px 4px 4px 0;
+            padding: 6px 12px;
+            background: white;
+            border: 1px solid #60a5fa;
+            color: #60a5fa;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .example-btn:hover {
+            background: #60a5fa;
+            color: white;
+        }
+
+        .info {
+            padding: 12px;
+            background: #eff6ff;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #3b82f6;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 0;
+            }
+            
+            .tab {
+                font-size: 12px;
+                padding: 12px 8px;
+            }
+            
+            .tab-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🪄 Magic Tools - AI Assistant</h1>
+        </header>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('detect')">🔍 Detect</button>
+            <button class="tab" onclick="switchTab('translate')">🌐 Translate</button>
+            <button class="tab" onclick="switchTab('summarize')">📝 Summarize</button>
+            <button class="tab" onclick="switchTab('analyze')">📊 Analyze</button>
+            <button class="tab" onclick="switchTab('rephrase')">✍️ Rephrase</button>
+        </div>
+
+        <!-- Language Detection Tab -->
+        <div id="detect-tab" class="tab-content active">
+            <div class="info">
+                💡 Detect the language of any text from 48 supported languages
+            </div>
+
+            <div class="form-group">
+                <label>Enter Text:</label>
+                <textarea id="detectText" placeholder="Type or paste text here..."></textarea>
+            </div>
+
+            <div class="examples">
+                <strong>Examples:</strong>
+                <span class="example-btn" onclick="setDetectExample('السلام عليكم ورحمة الله')">Arabic</span>
+                <span class="example-btn" onclick="setDetectExample('Hello, how are you today?')">English</span>
+                <span class="example-btn" onclick="setDetectExample('Bonjour, comment allez-vous?')">French</span>
+                <span class="example-btn" onclick="setDetectExample('Hola, ¿cómo estás?')">Spanish</span>
+            </div>
+
+            <button id="detectBtn" onclick="detectLanguage()">Detect Language</button>
+            <div id="detectResult" class="result-box"></div>
+        </div>
+
+        <!-- Translation Tab -->
+        <div id="translate-tab" class="tab-content">
+            <div class="info">
+                💡 Translate text between 48 languages with AI-powered accuracy
+            </div>
+
+            <div class="form-group">
+                <label>Text to Translate:</label>
+                <textarea id="translateText" placeholder="Enter text to translate..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Target Language:</label>
+                <select id="targetLang">
+                    <option value="eng">English</option>
+                    <option value="ara">Arabic (العربية)</option>
+                    <option value="fra">French (Français)</option>
+                    <option value="spa">Spanish (Español)</option>
+                    <option value="deu">German (Deutsch)</option>
+                    <option value="ita">Italian (Italiano)</option>
+                    <option value="por">Portuguese (Português)</option>
+                    <option value="rus">Russian (Русский)</option>
+                    <option value="zho">Chinese (中文)</option>
+                    <option value="jpn">Japanese (日本語)</option>
+                    <option value="kor">Korean (한국어)</option>
+                    <option value="hin">Hindi (हिंदी)</option>
+                    <option value="tur">Turkish (Türkçe)</option>
+                    <option value="fas">Persian (فارسی)</option>
+                    <option value="heb">Hebrew (עברית)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Translation Type:</label>
+                <select id="translationType">
+                    <option value="general">General</option>
+                    <option value="legal">Legal</option>
+                    <option value="academic">Academic</option>
+                </select>
+            </div>
+
+            <div class="examples">
+                <strong>Examples:</strong>
+                <span class="example-btn" onclick="setTranslateExample('مرحبا كيف حالك؟', 'eng')">Arabic → English</span>
+                <span class="example-btn" onclick="setTranslateExample('Hello, how are you?', 'ara')">English → Arabic</span>
+            </div>
+
+            <button id="translateBtn" onclick="translateText()">Translate</button>
+            <div id="translateResult" class="result-box"></div>
+        </div>
+
+        <!-- Summarization Tab -->
+        <div id="summarize-tab" class="tab-content">
+            <div class="info">
+                💡 Get AI-powered summaries of any text - brief or detailed
+            </div>
+
+            <div class="form-group">
+                <label>Text to Summarize:</label>
+                <textarea id="summarizeText" rows="8" placeholder="Enter or paste long text here..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Summary Type:</label>
+                <select id="summarizationType">
+                    <option value="brief">Brief (2-4 sentences)</option>
+                    <option value="detailed">Detailed (Comprehensive)</option>
+                </select>
+            </div>
+
+            <div class="examples">
+                <strong>Example:</strong>
+                <span class="example-btn" onclick="setSummarizeExample()">Legal Text</span>
+            </div>
+
+            <button id="summarizeBtn" onclick="summarizeText()">Summarize</button>
+            <div id="summarizeResult" class="result-box"></div>
+        </div>
+
+        <!-- Analysis Tab -->
+        <div id="analyze-tab" class="tab-content">
+            <div class="info">
+                💡 Get AI-powered legal analysis - brief overview or detailed examination
+            </div>
+
+            <div class="form-group">
+                <label>Legal Text to Analyze:</label>
+                <textarea id="analyzeText" rows="8" placeholder="Enter legal text for analysis..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Analysis Type:</label>
+                <select id="analysisType">
+                    <option value="brief">Brief (Key Points)</option>
+                    <option value="detailed">Detailed (Comprehensive)</option>
+                </select>
+            </div>
+
+            <div class="examples">
+                <strong>Example:</strong>
+                <span class="example-btn" onclick="setAnalyzeExample()">Legal Clause</span>
+            </div>
+
+            <button id="analyzeBtn" onclick="analyzeText()">Analyze</button>
+            <div id="analyzeResult" class="result-box"></div>
+        </div>
+
+        <!-- Rephrasing Tab -->
+        <div id="rephrase-tab" class="tab-content">
+            <div class="info">
+                💡 Improve clarity and professionalism while maintaining legal meaning
+            </div>
+
+            <div class="form-group">
+                <label>Legal Text to Rephrase:</label>
+                <textarea id="rephraseText" rows="8" placeholder="Enter legal text to rephrase..."></textarea>
+            </div>
+
+            <div class="examples">
+                <strong>Example:</strong>
+                <span class="example-btn" onclick="setRephraseExample()">Legal Sentence</span>
+            </div>
+
+            <button id="rephraseBtn" onclick="rephraseText()">Rephrase</button>
+            <div id="rephraseResult" class="result-box"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://127.0.0.1:8000';
+        console.log('API Base URL:', API_BASE);
+
+        // Markdown Parser
+        function parseMarkdown(text) {
+            if (!text) return '';
+            
+            let html = text.replace(/<think>[\s\S]*?<\/think>/gi, '');
+            html = html.replace(/^<think>[\s\S]*$/gim, '');
+            html = html.trim();
+            
+            if (!html) return '';
+            
+            html = html.replace(/([^\n#])(#{1,4}\s)/g, '$1\n$2');
+            html = html.replace(/([^\n\d])(\d+\.\s)/g, '$1\n$2');
+            html = html.replace(/([^\n\-])(-\s)/g, '$1\n$2');
+            
+            html = html
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+            
+            html = html.replace(/\[(https?:\/\/[^\]]+)\]/g, function(match, url) {
+                try {
+                    const domain = new URL(url).hostname.replace(/^www\./, '').split('.')[0];
+                    return `<a href="${url}" target="_blank" class="citation-link">[${domain}]</a>`;
+                } catch (e) {
+                    return `<a href="${url}" target="_blank" class="citation-link">[source]</a>`;
+                }
+            });
+            
+            html = html.replace(/\[(\d+)\]/g, '<span class="citation-ref">[$1]</span>');
+            html = html.replace(/\[(source|no specific URL)[^\]]*\]/gi, '<span class="citation-ref">[source]</span>');
+            
+            html = html.replace(/```(\w*)\n?([\s\S]*?)```/g, '<pre><code>$2</code></pre>');
+            html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+            
+            html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/__([^_]+)__/g, '<strong>$1</strong>');
+            
+            html = html.replace(/^####\s+(.+)$/gm, '<h5>$1</h5>');
+            html = html.replace(/^###\s+(.+)$/gm, '<h4>$1</h4>');
+            html = html.replace(/^##\s+(.+)$/gm, '<h3>$1</h3>');
+            html = html.replace(/^#\s+(.+)$/gm, '<h2>$1</h2>');
+            
+            html = html.replace(/^(\d+)\.\s+(.+)$/gm, '<li class="numbered"><span class="list-num">$1.</span> $2</li>');
+            html = html.replace(/^-\s+(.+)$/gm, '<li class="bullet">$1</li>');
+            
+            html = html.replace(/\n\n/g, '<br><br>');
+            html = html.replace(/\n/g, '<br>');
+            
+            html = html.replace(/<\/h([2345])><br>/g, '</h$1>');
+            html = html.replace(/<\/li><br>/g, '</li>');
+            html = html.replace(/<br><li/g, '<li');
+            
+            return html;
+        }
+
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(`${tabName}-tab`).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // Example setters
+        function setDetectExample(text) {
+            document.getElementById('detectText').value = text;
+        }
+
+        function setTranslateExample(text, targetLang) {
+            document.getElementById('translateText').value = text;
+            document.getElementById('targetLang').value = targetLang;
+        }
+
+        function setSummarizeExample() {
+            const legalText = "Law is the system of rules that governs society and regulates relationships between individuals, institutions, and the state. Its main purpose is to protect rights, ensure justice, and maintain order. Through law, people are guaranteed fundamental rights such as safety, property, and equality, while also being held accountable for their actions. A fair and well-applied legal system is essential for stability, trust, and the peaceful coexistence of society. The law operates through various mechanisms including legislation, judicial interpretation, and enforcement by authorities. Different legal systems exist around the world, including common law, civil law, and religious law systems.";
+            document.getElementById('summarizeText').value = legalText;
+        }
+
+        // Analysis Examples
+        function setAnalyzeExample() {
+            const legalClause = "The First Party shall have the right to terminate this Agreement upon thirty (30) days written notice to the Second Party in the event of a material breach of any provision herein, provided that such breach remains uncured following a fifteen (15) day cure period after receipt of written notice specifying the nature of the breach.";
+            document.getElementById('analyzeText').value = legalClause;
+        }
+
+        // Rephrasing Examples
+        function setRephraseExample() {
+            const legalSentence = "Notwithstanding anything to the contrary contained herein, the parties hereto agree that in the event of any dispute arising out of or relating to this Agreement, such dispute shall be resolved through binding arbitration in accordance with the rules of the arbitration authority.";
+            document.getElementById('rephraseText').value = legalSentence;
+        }
+
+        // Language Detection
+        async function detectLanguage() {
+            const text = document.getElementById('detectText').value.trim();
+            const resultBox = document.getElementById('detectResult');
+            const btn = document.getElementById('detectBtn');
+
+            if (!text) {
+                showResult(resultBox, 'error', 'Error', 'Please enter some text');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = 'Detecting... <span class="loading"></span>';
+            resultBox.className = 'result-box';
+
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/magic-tools/detect-language`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.detected_language !== 'none') {
+                    const message = `<strong>Detected Language:</strong> ${data.language_name_en}<br><strong>Arabic:</strong> ${data.language_name_ar}<br><strong>Code:</strong> ${data.detected_language}`;
+                    showResult(resultBox, 'success', '✓ Detection Complete', message);
+                } else {
+                    showResult(resultBox, 'error', 'Not Found', 'Language not in supported list');
+                }
+            } catch (error) {
+                showResult(resultBox, 'error', 'Error', `Request failed: ${error.message}`);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Detect Language';
+            }
+        }
+
+        // Translation
+        async function translateText() {
+            const text = document.getElementById('translateText').value.trim();
+            const targetLang = document.getElementById('targetLang').value;
+            const translationType = document.getElementById('translationType').value;
+            const resultBox = document.getElementById('translateResult');
+            const btn = document.getElementById('translateBtn');
+
+            if (!text) {
+                showResult(resultBox, 'error', 'Error', 'Please enter text to translate');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = 'Translating... <span class="loading"></span>';
+            resultBox.className = 'result-box show';
+            resultBox.innerHTML = '<div class="result-title">Translating...</div><div class="result-content"></div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/magic-tools/translation`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text, lang: targetLang, type: translationType })
+                });
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let translatedText = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value);
+                    const lines = chunk.split('\n');
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const data = line.slice(6);
+                            if (data === '[DONE]') break;
+
+                            try {
+                                const json = JSON.parse(data);
+                                if (json.content) {
+                                    translatedText += json.content;
+                                    const formatted = parseMarkdown(translatedText);
+                                    resultBox.querySelector('.result-content').innerHTML = formatted;
+                                }
+                            } catch (e) {}
+                        }
+                    }
+                }
+
+                if (translatedText) {
+                    resultBox.className = 'result-box show success';
+                    resultBox.querySelector('.result-title').textContent = '✓ Translation Complete';
+                }
+            } catch (error) {
+                showResult(resultBox, 'error', 'Error', `Request failed: ${error.message}`);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Translate';
+            }
+        }
+
+        // Summarization
+        async function summarizeText() {
+            const text = document.getElementById('summarizeText').value.trim();
+            const summarizationType = document.getElementById('summarizationType').value;
+            const resultBox = document.getElementById('summarizeResult');
+            const btn = document.getElementById('summarizeBtn');
+
+            if (!text) {
+                showResult(resultBox, 'error', 'Error', 'Please enter text to summarize');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = 'Summarizing... <span class="loading"></span>';
+            resultBox.className = 'result-box show';
+            resultBox.innerHTML = '<div class="result-title">Summarizing...</div><div class="result-content"></div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/magic-tools/summarize`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text, type: summarizationType })
+                });
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let summaryText = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value);
+                    const lines = chunk.split('\n');
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const data = line.slice(6);
+                            if (data === '[DONE]') break;
+
+                            try {
+                                const json = JSON.parse(data);
+                                if (json.content) {
+                                    summaryText += json.content;
+                                    const formatted = parseMarkdown(summaryText);
+                                    resultBox.querySelector('.result-content').innerHTML = formatted;
+                                }
+                            } catch (e) {}
+                        }
+                    }
+                }
+
+                if (summaryText) {
+                    resultBox.className = 'result-box show success';
+                    resultBox.querySelector('.result-title').textContent = '✓ Summary Complete';
+                }
+            } catch (error) {
+                showResult(resultBox, 'error', 'Error', `Request failed: ${error.message}`);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Summarize';
+            }
+        }
+
+        // Analysis
+        async function analyzeText() {
+            const text = document.getElementById('analyzeText').value.trim();
+            const analysisType = document.getElementById('analysisType').value;
+            const resultBox = document.getElementById('analyzeResult');
+            const btn = document.getElementById('analyzeBtn');
+
+            if (!text) {
+                showResult(resultBox, 'error', 'Error', 'Please enter legal text to analyze');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = 'Analyzing... <span class="loading"></span>';
+            resultBox.className = 'result-box show';
+            resultBox.innerHTML = '<div class="result-title">Analyzing...</div><div class="result-content"></div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/magic-tools/analyze`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text, type: analysisType })
+                });
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let analysisText = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value);
+                    const lines = chunk.split('\n');
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const data = line.slice(6);
+                            if (data === '[DONE]') break;
+
+                            try {
+                                const json = JSON.parse(data);
+                                if (json.content) {
+                                    analysisText += json.content;
+                                    const formatted = parseMarkdown(analysisText);
+                                    resultBox.querySelector('.result-content').innerHTML = formatted;
+                                }
+                            } catch (e) {}
+                        }
+                    }
+                }
+
+                if (analysisText) {
+                    resultBox.className = 'result-box show success';
+                    resultBox.querySelector('.result-title').textContent = '✓ Analysis Complete';
+                }
+            } catch (error) {
+                showResult(resultBox, 'error', 'Error', `Request failed: ${error.message}`);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Analyze';
+            }
+        }
+
+        // Rephrasing
+        async function rephraseText() {
+            const text = document.getElementById('rephraseText').value.trim();
+            const resultBox = document.getElementById('rephraseResult');
+            const btn = document.getElementById('rephraseBtn');
+
+            if (!text) {
+                showResult(resultBox, 'error', 'Error', 'Please enter legal text to rephrase');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = 'Rephrasing... <span class="loading"></span>';
+            resultBox.className = 'result-box show';
+            resultBox.innerHTML = '<div class="result-title">Rephrasing...</div><div class="result-content"></div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/api/v1/magic-tools/rephrase`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text })
+                });
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder();
+                let rephrasedText = '';
+
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value);
+                    const lines = chunk.split('\n');
+
+                    for (const line of lines) {
+                        if (line.startsWith('data: ')) {
+                            const data = line.slice(6);
+                            if (data === '[DONE]') break;
+
+                            try {
+                                const json = JSON.parse(data);
+                                if (json.content) {
+                                    rephrasedText += json.content;
+                                    const formatted = parseMarkdown(rephrasedText);
+                                    resultBox.querySelector('.result-content').innerHTML = formatted;
+                                }
+                            } catch (e) {}
+                        }
+                    }
+                }
+
+                if (rephrasedText) {
+                    resultBox.className = 'result-box show success';
+                    resultBox.querySelector('.result-title').textContent = '✓ Rephrasing Complete';
+                }
+            } catch (error) {
+                showResult(resultBox, 'error', 'Error', `Request failed: ${error.message}`);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Rephrase';
+            }
+        }
+
+        // Helper function
+        function showResult(element, type, title, message) {
+            element.className = `result-box show ${type}`;
+            element.innerHTML = `
+                <div class="result-title">${title}</div>
+                <div class="result-content">${message}</div>
+            `;
+        }
+    </script>
+</body>
+</html>
+

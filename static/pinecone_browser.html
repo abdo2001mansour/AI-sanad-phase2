@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 Pinecone Index Browser</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .button:active {
+            transform: translateY(0);
+        }
+
+        .button.secondary {
+            background: #6c757d;
+        }
+
+        .button.success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+
+        .index-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .index-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .index-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .index-card.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .index-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .index-stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 8px 0;
+            font-size: 13px;
+            color: #6c757d;
+        }
+
+        .index-stat strong {
+            color: #495057;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            background: #667eea;
+            color: white;
+        }
+
+        .badge.success {
+            background: #28a745;
+        }
+
+        .badge.warning {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .badge.danger {
+            background: #dc3545;
+        }
+
+        .documents-list {
+            margin-top: 20px;
+        }
+
+        .document-item {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 12px;
+            transition: all 0.2s;
+        }
+
+        .document-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+        }
+
+        .doc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 10px;
+        }
+
+        .doc-title {
+            font-weight: 600;
+            color: #495057;
+            font-size: 14px;
+            word-break: break-word;
+        }
+
+        .doc-metadata {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 8px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .meta-item {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        .meta-item strong {
+            color: #495057;
+            font-weight: 600;
+        }
+
+        .text-preview {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #495057;
+            margin-top: 10px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #f5c6cb;
+            margin: 15px 0;
+        }
+
+        .success-msg {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #c3e6cb;
+            margin: 15px 0;
+        }
+
+        .info-box {
+            background: #d1ecf1;
+            color: #0c5460;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #bee5eb;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        input[type="number"] {
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 14px;
+            width: 120px;
+        }
+
+        label {
+            font-size: 14px;
+            color: #495057;
+            font-weight: 600;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            text-align: center;
+        }
+
+        .stat-box .number {
+            font-size: 28px;
+            font-weight: 700;
+            color: #667eea;
+            display: block;
+        }
+
+        .stat-box .label {
+            font-size: 12px;
+            color: #6c757d;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+
+        .unique-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .unique-item {
+            background: #667eea;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                📊 Pinecone Index Browser
+            </h1>
+            <p>Browse and inspect documents in your Pinecone vector database</p>
+        </div>
+
+        <div class="content">
+            <!-- All Indexes Section -->
+            <div class="section">
+                <h2>🗂️ All Indexes</h2>
+                <div class="controls">
+                    <button class="button success" onclick="loadIndexes()">
+                        🔄 Refresh Indexes
+                    </button>
+                </div>
+                <div id="indexesContainer">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Loading indexes...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Selected Index Details -->
+            <div class="section" id="detailsSection" style="display: none;">
+                <h2>📄 Index Details: <span id="selectedIndexName"></span></h2>
+                
+                <div class="controls">
+                    <label>Sample Size:</label>
+                    <input type="number" id="sampleLimit" value="20" min="1" max="100">
+                    <button class="button" onclick="loadIndexDetails()">
+                        🔍 Load Documents
+                    </button>
+                </div>
+
+                <div id="statsContainer"></div>
+                <div id="documentsContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000/api/v1';
+        let selectedIndex = null;
+
+        // Load all indexes on page load
+        window.onload = function() {
+            loadIndexes();
+        };
+
+        async function loadIndexes() {
+            const container = document.getElementById('indexesContainer');
+            container.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading indexes...</p>
+                </div>
+            `;
+
+            try {
+                const response = await fetch(`${API_BASE}/rag/inspect`);
+                if (!response.ok) {
+                    throw new Error(`Failed to load indexes: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                displayIndexes(data);
+            } catch (error) {
+                container.innerHTML = `
+                    <div class="error">
+                        <strong>Error:</strong> ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        function displayIndexes(data) {
+            const container = document.getElementById('indexesContainer');
+            
+            if (!data.indexes || data.indexes.length === 0) {
+                container.innerHTML = `
+                    <div class="info-box">
+                        No indexes found in Pinecone.
+                    </div>
+                `;
+                return;
+            }
+
+            let html = `<div class="index-grid">`;
+            
+            data.indexes.forEach(index => {
+                const isSelected = selectedIndex === index.name;
+                const hasVectors = index.total_vectors > 0;
+                
+                html += `
+                    <div class="index-card ${isSelected ? 'selected' : ''}" onclick="selectIndex('${index.name}')">
+                        <h3>
+                            ${index.name === 'user-index-document' ? '👤' : '📚'} ${index.name}
+                        </h3>
+                        <div class="index-stat">
+                            <span><strong>Vectors:</strong></span>
+                            <span class="badge ${hasVectors ? 'success' : 'warning'}">${index.total_vectors.toLocaleString()}</span>
+                        </div>
+                        <div class="index-stat">
+                            <span><strong>Dimension:</strong></span>
+                            <span>${index.dimension}</span>
+                        </div>
+                        ${index.metric ? `
+                        <div class="index-stat">
+                            <span><strong>Metric:</strong></span>
+                            <span>${index.metric}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+            
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        function selectIndex(indexName) {
+            selectedIndex = indexName;
+            document.getElementById('selectedIndexName').textContent = indexName;
+            document.getElementById('detailsSection').style.display = 'block';
+            
+            // Refresh index cards to show selection
+            loadIndexes();
+            
+            // Load index details
+            loadIndexDetails();
+        }
+
+        async function loadIndexDetails() {
+            if (!selectedIndex) return;
+
+            const limit = document.getElementById('sampleLimit').value;
+            const statsContainer = document.getElementById('statsContainer');
+            const docsContainer = document.getElementById('documentsContainer');
+            
+            statsContainer.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading documents from ${selectedIndex}...</p>
+                </div>
+            `;
+            docsContainer.innerHTML = '';
+
+            try {
+                const response = await fetch(`${API_BASE}/rag/inspect/${selectedIndex}?limit=${limit}`);
+                if (!response.ok) {
+                    throw new Error(`Failed to load index details: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                displayIndexDetails(data);
+            } catch (error) {
+                statsContainer.innerHTML = `
+                    <div class="error">
+                        <strong>Error:</strong> ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        function displayIndexDetails(data) {
+            const statsContainer = document.getElementById('statsContainer');
+            const docsContainer = document.getElementById('documentsContainer');
+
+            // Display summary statistics
+            let statsHtml = `<div class="summary-stats">`;
+            
+            statsHtml += `
+                <div class="stat-box">
+                    <span class="number">${data.total_vectors.toLocaleString()}</span>
+                    <span class="label">Total Vectors</span>
+                </div>
+                <div class="stat-box">
+                    <span class="number">${data.dimension}</span>
+                    <span class="label">Dimension</span>
+                </div>
+                <div class="stat-box">
+                    <span class="number">${data.sample_size}</span>
+                    <span class="label">Sample Size</span>
+                </div>
+            `;
+            
+            statsHtml += `</div>`;
+
+            // Display unique user IDs if available
+            if (data.unique_user_ids && data.unique_user_ids.length > 0) {
+                statsHtml += `
+                    <div style="margin-bottom: 15px;">
+                        <strong>Unique User IDs (${data.unique_user_ids.length}):</strong>
+                        <div class="unique-list">
+                            ${data.unique_user_ids.map(id => `<span class="unique-item">👤 ${id}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Display unique filenames if available
+            if (data.unique_filenames && data.unique_filenames.length > 0) {
+                statsHtml += `
+                    <div style="margin-bottom: 15px;">
+                        <strong>Unique Filenames (${data.unique_filenames.length}):</strong>
+                        <div class="unique-list">
+                            ${data.unique_filenames.map(name => `<span class="unique-item">📄 ${name}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            statsContainer.innerHTML = statsHtml;
+
+            // Display sample documents
+            if (!data.sample_documents || data.sample_documents.length === 0) {
+                docsContainer.innerHTML = `
+                    <div class="info-box">
+                        No documents found in this index.
+                    </div>
+                `;
+                return;
+            }
+
+            let docsHtml = `<div class="documents-list">`;
+            docsHtml += `<h3 style="margin-bottom: 15px; color: #495057;">Sample Documents (${data.sample_documents.length})</h3>`;
+            
+            data.sample_documents.forEach((doc, index) => {
+                const metadata = doc.metadata;
+                
+                docsHtml += `
+                    <div class="document-item">
+                        <div class="doc-header">
+                            <div class="doc-title">
+                                📄 ${metadata.filename || metadata.file_name || 'Unnamed Document'}
+                            </div>
+                            <span class="badge">#${index + 1}</span>
+                        </div>
+                        
+                        <div class="doc-metadata">
+                            ${metadata.user_id ? `<div class="meta-item"><strong>User ID:</strong> ${metadata.user_id}</div>` : ''}
+                            ${metadata.document_id ? `<div class="meta-item"><strong>Doc ID:</strong> ${metadata.document_id.substring(0, 8)}...</div>` : ''}
+                            ${metadata.page_number ? `<div class="meta-item"><strong>Page:</strong> ${metadata.page_number}</div>` : ''}
+                            ${metadata.chunk_number ? `<div class="meta-item"><strong>Chunk:</strong> ${metadata.chunk_number}</div>` : ''}
+                            ${metadata.content_type ? `<div class="meta-item"><strong>Type:</strong> ${metadata.content_type}</div>` : ''}
+                            ${metadata.created_at ? `<div class="meta-item"><strong>Created:</strong> ${new Date(metadata.created_at).toLocaleDateString()}</div>` : ''}
+                            ${metadata.s3_bucket ? `<div class="meta-item"><strong>S3 Bucket:</strong> ${metadata.s3_bucket}</div>` : ''}
+                            ${metadata.s3_key ? `<div class="meta-item"><strong>S3 Key:</strong> ${metadata.s3_key}</div>` : ''}
+                            ${metadata.primary_category ? `<div class="meta-item"><strong>Category:</strong> ${metadata.primary_category}</div>` : ''}
+                        </div>
+                        
+                        ${metadata.classifications && metadata.classifications.length > 0 ? `
+                            <div style="margin-top: 10px;">
+                                <strong style="font-size: 12px; color: #495057;">Classifications:</strong>
+                                <div class="unique-list" style="margin-top: 5px;">
+                                    ${metadata.classifications.map(c => `<span class="unique-item" style="background: #20c997;">${c}</span>`).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                        
+                        ${metadata.text_preview ? `
+                            <div>
+                                <strong style="font-size: 12px; color: #495057; display: block; margin-top: 10px; margin-bottom: 5px;">Text Preview:</strong>
+                                <div class="text-preview">${metadata.text_preview}</div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            });
+            
+            docsHtml += `</div>`;
+            docsContainer.innerHTML = docsHtml;
+        }
+    </script>
+</body>
+</html>
+

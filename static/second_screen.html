@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAG Document Search | Advanced Legal Search</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            color: #1e293b;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e40af 0%, #0ea5e9 100%);
+            color: white;
+            padding: 20px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .search-section {
+            background: white;
+            padding: 25px 30px;
+            border-bottom: 2px solid #cbd5e1;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .search-input-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: flex-start;
+        }
+        
+        .search-input-wrapper {
+            flex: 1;
+        }
+        
+        .search-input-wrapper label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            color: #334155;
+            margin-bottom: 8px;
+        }
+        
+        #searchQuery {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: all 0.2s ease;
+            min-height: 50px;
+            resize: vertical;
+        }
+        
+        #searchQuery:focus {
+            outline: none;
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
+        
+        .search-btn {
+            background: linear-gradient(135deg, #1e40af 0%, #0ea5e9 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            align-self: flex-end;
+            min-width: 120px;
+        }
+        
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+        }
+        
+        .search-btn:active {
+            transform: translateY(0);
+        }
+        
+        .search-btn:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .filters-section {
+            background: #f8fafc;
+            padding: 20px 30px;
+            border-bottom: 2px solid #cbd5e1;
+        }
+        
+        .filter-row {
+            margin-bottom: 20px;
+        }
+        
+        .filter-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .filter-label {
+            font-weight: 600;
+            font-size: 14px;
+            color: #334155;
+            margin-bottom: 12px;
+            display: block;
+        }
+        
+        .filter-checkboxes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        .filter-checkbox-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 14px;
+            background: white;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .filter-checkbox-item:hover {
+            background: #f1f5f9;
+            border-color: #0ea5e9;
+        }
+        
+        .filter-checkbox-item input[type="checkbox"] {
+            margin-right: 8px;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+        
+        .filter-checkbox-item label {
+            cursor: pointer;
+            font-size: 14px;
+            margin: 0;
+            user-select: none;
+        }
+        
+        .filter-checkbox-item.checked {
+            background: #eff6ff;
+            border-color: #0ea5e9;
+        }
+        
+        .warning-box {
+            font-size: 12px;
+            color: #92400e;
+            margin-top: 12px;
+            padding: 10px;
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            border-radius: 4px;
+        }
+        
+        .results-section {
+            padding: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .results-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        
+        .results-count {
+            font-size: 14px;
+            color: #64748b;
+        }
+        
+        .results-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .result-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+        }
+        
+        .result-card:hover {
+            border-color: #0ea5e9;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .result-meta {
+            flex: 1;
+        }
+        
+        .result-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+        
+        .result-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 13px;
+            color: #64748b;
+        }
+        
+        .result-info-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .result-info-item strong {
+            color: #334155;
+        }
+        
+        .file-path {
+            background: #f8fafc;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #1e293b;
+            word-break: break-all;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .result-content {
+            margin-top: 15px;
+        }
+        
+        .result-content-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+        
+        .result-text {
+            line-height: 1.8;
+            color: #1e293b;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #0ea5e9;
+        }
+        
+        .metadata-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .metadata-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            font-size: 13px;
+        }
+        
+        .metadata-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .metadata-label {
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 4px;
+        }
+        
+        .metadata-value {
+            color: #1e293b;
+            word-break: break-word;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+        }
+        
+        .loading-spinner {
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #0ea5e9;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #dc2626;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #64748b;
+        }
+        
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .top-k-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .top-k-control label {
+            font-weight: 600;
+            font-size: 14px;
+            color: #334155;
+        }
+        
+        .top-k-control input {
+            width: 80px;
+            padding: 8px;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .top-k-control input:focus {
+            outline: none;
+            border-color: #0ea5e9;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🔍 RAG Document Search</h1>
+        <p>Search legal documents from Pinecone vector database | بحث في الوثائق القانونية</p>
+    </div>
+    
+    <div class="search-section">
+        <div class="search-input-group">
+            <div class="search-input-wrapper">
+                <label for="searchQuery">Search Query (اكتب استفسارك):</label>
+                <textarea id="searchQuery" placeholder="Enter your search query here... | اكتب استفسارك هنا..."></textarea>
+            </div>
+            <button class="search-btn" id="searchBtn" onclick="performSearch()">🔍 Search</button>
+        </div>
+        
+        <div class="top-k-control">
+            <label for="topK">Number of results:</label>
+            <input type="number" id="topK" min="1" max="50" value="5">
+        </div>
+    </div>
+    
+    <div class="filters-section">
+            <div class="filter-row">
+            <label class="filter-label">Pinecone Indexes (Select which indexes to search):</label>
+            <div class="filter-checkboxes">
+                <div class="filter-checkbox-item" onclick="toggleCheckbox(this)">
+                    <input type="checkbox" id="index_qadha" value="qadha">
+                    <label for="index_qadha">Qadha</label>
+                </div>
+                <div class="filter-checkbox-item" onclick="toggleCheckbox(this)">
+                    <input type="checkbox" id="index_contracts" value="contracts">
+                    <label for="index_contracts">Contracts</label>
+                </div>
+                <div class="filter-checkbox-item" onclick="toggleCheckbox(this)">
+                    <input type="checkbox" id="index_bog" value="bog">
+                    <label for="index_bog">BOG</label>
+                </div>
+                <div class="filter-checkbox-item" onclick="toggleCheckbox(this)">
+                    <input type="checkbox" id="index_new_ncar" value="new_ncar">
+                    <label for="index_new_ncar">New NCAR</label>
+                </div>
+                <div class="filter-checkbox-item" onclick="toggleCheckbox(this)">
+                    <input type="checkbox" id="index_namazig" value="namazig">
+                    <label for="index_namazig">Namazig</label>
+                </div>
+            </div>
+            <div class="warning-box">
+                <strong>[WARNING] Important:</strong> You must check at least one index above to search in Pinecone. 
+            </div>
+        </div>
+        
+        <div class="filter-row">
+            <label class="filter-label">Classification (التصنيف):</label>
+            <div class="filter-checkboxes" id="classificationCheckboxes">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+    
+    <div class="results-section" id="resultsSection" style="display: none;">
+        <div class="results-header">
+            <div class="results-title">Search Results</div>
+            <div class="results-count" id="resultsCount"></div>
+                </div>
+        <div class="results-list" id="resultsList"></div>
+                </div>
+                
+    <div id="loadingContainer" class="loading" style="display: none;">
+        <div class="loading-spinner"></div>
+        <div>Searching documents...</div>
+                </div>
+                
+    <div id="errorContainer" style="display: none;"></div>
+    
+    <div id="emptyState" class="empty-state">
+        <div class="empty-state-icon">🔍</div>
+        <div>Enter a search query and select at least one index to begin searching</div>
+    </div>
+    
+    <script>
+        const API_BASE = window.location.protocol === 'file:' 
+            ? 'http://localhost:8000/api/v1' 
+            : `${window.location.origin}/api/v1`;
+        
+        // Classification systems
+        const classifications = [
+            "النظام الإداري",
+            "النظام الجزائي",
+            "نظام الأحوال الشخصية",
+            "نظام المعاملات المدنية",
+            "نظام الإجراءات الجزائية",
+            "نظام المرافعات",
+            "نظام الملكية الفكرية",
+            "نظام الاستثمار",
+            "النظام الجوي",
+            "النظام البحري",
+            "النظام الدولي",
+            "نظام سوق المال",
+            "نظام العمل",
+            "نظام التنفيذ",
+            "النظام البيئي",
+            "النظام الدستوري",
+            "النظام الاداري",
+            "النظام التجاري"
+        ];
+        
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            initializeClassifications();
+            
+            // Allow Enter key to search
+            document.getElementById('searchQuery').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && e.ctrlKey) {
+                    e.preventDefault();
+                    performSearch();
+                }
+            });
+        });
+        
+        // Initialize classification checkboxes
+        function initializeClassifications() {
+            const container = document.getElementById('classificationCheckboxes');
+            classifications.forEach((classification, index) => {
+                const item = document.createElement('div');
+                item.className = 'filter-checkbox-item';
+                item.onclick = () => toggleCheckbox(item);
+                const checkboxId = `classification_${index}`;
+                item.innerHTML = `
+                    <input type="checkbox" id="${checkboxId}" value="${classification}">
+                    <label for="${checkboxId}">${classification}</label>
+                `;
+                container.appendChild(item);
+            });
+        }
+        
+        // Toggle checkbox and visual state
+        function toggleCheckbox(element) {
+            const checkbox = element.querySelector('input[type="checkbox"]');
+            checkbox.checked = !checkbox.checked;
+            if (checkbox.checked) {
+                element.classList.add('checked');
+            } else {
+                element.classList.remove('checked');
+            }
+        }
+        
+        // Get selected indexes
+        function getSelectedIndexes() {
+            const indexes = [];
+            document.querySelectorAll('input[type="checkbox"][id^="index_"]:checked').forEach(cb => {
+                indexes.push(cb.value);
+            });
+            return indexes;
+        }
+        
+        // Get selected classifications
+        function getSelectedClassifications() {
+            const classifications = [];
+            document.querySelectorAll('input[type="checkbox"][id^="classification_"]:checked').forEach(cb => {
+                classifications.push(cb.value);
+            });
+            return classifications;
+        }
+        
+        // Perform search
+        async function performSearch() {
+            const query = document.getElementById('searchQuery').value.trim();
+            if (!query) {
+                showError('Please enter a search query');
+                return;
+            }
+            
+            const selectedIndexes = getSelectedIndexes();
+            if (selectedIndexes.length === 0) {
+                showError('Please select at least one index to search');
+                return;
+            }
+            
+            const topK = parseInt(document.getElementById('topK').value) || 5;
+            const selectedClassifications = getSelectedClassifications();
+            
+            // Hide previous results and show loading
+            document.getElementById('resultsSection').style.display = 'none';
+            document.getElementById('emptyState').style.display = 'none';
+            document.getElementById('errorContainer').style.display = 'none';
+            document.getElementById('loadingContainer').style.display = 'block';
+            
+            const searchBtn = document.getElementById('searchBtn');
+            searchBtn.disabled = true;
+            searchBtn.textContent = 'Searching...';
+            
+            try {
+            const requestData = {
+                    query: query,
+                    top_k: topK,
+                    index_names: selectedIndexes,
+                    min_similarity: 0.0
+                };
+                
+                if (selectedClassifications.length > 0) {
+                    requestData.classifications = selectedClassifications;
+                }
+                
+                console.log('Search request:', requestData);
+                
+                const response = await fetch(`${API_BASE}/rag/database/query`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData)
+            });
+            
+            if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ detail: 'Search failed' }));
+                    throw new Error(errorData.detail || `HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                console.log('Search results:', data);
+                
+                displayResults(data);
+                
+            } catch (error) {
+                console.error('Search error:', error);
+                showError(`Search failed: ${error.message}`);
+            } finally {
+                document.getElementById('loadingContainer').style.display = 'none';
+                searchBtn.disabled = false;
+                searchBtn.textContent = '🔍 Search';
+            }
+        }
+        
+        // Display search results
+        function displayResults(data) {
+            const resultsList = document.getElementById('resultsList');
+            resultsList.innerHTML = '';
+            
+            if (!data.results || data.results.length === 0) {
+                document.getElementById('emptyState').style.display = 'block';
+                document.getElementById('emptyState').innerHTML = `
+                    <div class="empty-state-icon">📭</div>
+                    <div>No results found for your query</div>
+                `;
+                return;
+            }
+            
+            document.getElementById('resultsCount').textContent = `${data.total_results} result(s) found`;
+            document.getElementById('resultsSection').style.display = 'block';
+            
+            data.results.forEach((result, index) => {
+                const card = createResultCard(result, index + 1);
+                resultsList.appendChild(card);
+            });
+        }
+        
+        // Create result card
+        function createResultCard(result, index) {
+            const card = document.createElement('div');
+            card.className = 'result-card';
+            
+            const filename = result.filename || 'Unknown';
+            const indexName = result.index_name || 'unknown';
+            const pageNumber = result.page_number || 1;
+            const chunkNumber = result.chunk_number || 1;
+            const content = result.content || '';
+            
+            // Get metadata
+            const metadata = result.metadata || {};
+            const classifications = metadata.classifications || [];
+            const primaryCategory = metadata.primary_category || '';
+            
+            // Get S3 location info
+            const s3Location = result.s3_location || {};
+            const s3Path = s3Location.s3_path || '';
+            const s3Bucket = s3Location.bucket || metadata.s3_bucket || '';
+            const s3Key = s3Location.key || metadata.s3_key || '';
+            
+            // Build full file path
+            let fullFilePath = '';
+            if (s3Path) {
+                fullFilePath = s3Path;
+            } else if (s3Bucket && s3Key) {
+                fullFilePath = `s3://${s3Bucket}/${s3Key}`;
+            } else if (s3Key) {
+                fullFilePath = s3Key;
+            } else {
+                fullFilePath = filename;
+            }
+            
+            card.innerHTML = `
+                <div class="result-header">
+                    <div class="result-meta">
+                        <div class="result-title">Result #${index}</div>
+                        <div class="result-info">
+                            <div class="result-info-item">
+                                <strong>File:</strong> ${escapeHtml(filename)}
+                            </div>
+                            <div class="result-info-item">
+                                <strong>Index:</strong> ${escapeHtml(indexName)}
+                            </div>
+                            <div class="result-info-item">
+                                <strong>Page:</strong> ${pageNumber}
+                            </div>
+                            <div class="result-info-item">
+                                <strong>Chunk:</strong> ${chunkNumber}
+                            </div>
+                            ${classifications.length > 0 ? `
+                                <div class="result-info-item">
+                                    <strong>Classifications:</strong> ${classifications.map(c => escapeHtml(c)).join(', ')}
+                                </div>
+                            ` : ''}
+                            ${primaryCategory ? `
+                                <div class="result-info-item">
+                                    <strong>Category:</strong> ${escapeHtml(primaryCategory)}
+                                </div>
+                            ` : ''}
+                        </div>
+                        <div style="margin-top: 12px;">
+                            <div style="font-weight: 600; font-size: 12px; color: #64748b; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">Full File Path</div>
+                            <div class="file-path">${escapeHtml(fullFilePath)}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="result-content">
+                    <div class="result-content-label">Content</div>
+                    <div class="result-text">${escapeHtml(content)}</div>
+                </div>
+                
+                ${Object.keys(metadata).length > 0 ? `
+                    <div class="metadata-section">
+                        <div class="result-content-label">Metadata</div>
+                        <div class="metadata-grid">
+                            ${s3Bucket ? `
+                                <div class="metadata-item">
+                                    <div class="metadata-label">S3 Bucket</div>
+                                    <div class="metadata-value">${escapeHtml(s3Bucket)}</div>
+                                </div>
+                            ` : ''}
+                            ${s3Key ? `
+                                <div class="metadata-item">
+                                    <div class="metadata-label">S3 Key</div>
+                                    <div class="metadata-value">${escapeHtml(s3Key)}</div>
+                                </div>
+                            ` : ''}
+                            ${metadata.chunk_index !== undefined ? `
+                                <div class="metadata-item">
+                                    <div class="metadata-label">Chunk Index</div>
+                                    <div class="metadata-value">${metadata.chunk_index}</div>
+                                </div>
+                            ` : ''}
+                            ${metadata.total_chunks !== undefined ? `
+                                <div class="metadata-item">
+                                    <div class="metadata-label">Total Chunks</div>
+                                    <div class="metadata-value">${metadata.total_chunks}</div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                ` : ''}
+            `;
+            
+            return card;
+        }
+        
+        // Show error message
+        function showError(message) {
+            const errorContainer = document.getElementById('errorContainer');
+            errorContainer.innerHTML = `<div class="error">❌ ${escapeHtml(message)}</div>`;
+            errorContainer.style.display = 'block';
+            document.getElementById('resultsSection').style.display = 'none';
+            document.getElementById('emptyState').style.display = 'none';
+        }
+        
+        // Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>

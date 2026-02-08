@@ -1,0 +1,53 @@
+{
+  "indexes": [
+    {
+      "id": "regulations",
+      "technical_name": "new-ncar",
+      "name_ar": "أنظمة / لوائح",
+      "name_en": "Regulations / Bylaws",
+      "description_ar": "الأنظمة واللوائح التنفيذية في المملكة العربية السعودية",
+      "description_en": "Regulations and executive bylaws in the Kingdom of Saudi Arabia"
+    },
+    {
+      "id": "orders_circulars",
+      "technical_name": "bog",
+      "name_ar": "أوامر / تعاميم",
+      "name_en": "Orders / Circulars",
+      "description_ar": "الأوامر الملكية والتعاميم الحكومية",
+      "description_en": "Royal orders and government circulars"
+    },
+    {
+      "id": "precedents_diwan",
+      "technical_name": "qadha",
+      "name_ar": "سوابق قضائية (ديوان المظالم)",
+      "name_en": "Judicial Precedents (Board of Grievances)",
+      "description_ar": "أحكام وسوابق قضائية من ديوان المظالم",
+      "description_en": "Rulings and judicial precedents from the Board of Grievances"
+    },
+    {
+      "id": "precedents_moj",
+      "technical_name": "contracts",
+      "name_ar": "سوابق قضائية (وزارة العدل)",
+      "name_en": "Judicial Precedents (Ministry of Justice)",
+      "description_ar": "أحكام وسوابق قضائية من وزارة العدل",
+      "description_en": "Rulings and judicial precedents from the Ministry of Justice"
+    },
+    {
+      "id": "digital_books",
+      "technical_name": "rag-documents",
+      "name_ar": "كتب رقمية",
+      "name_en": "Digital Books",
+      "description_ar": "مكتبة الكتب القانونية الرقمية",
+      "description_en": "Digital legal books library"
+    },
+    {
+      "id": "templates",
+      "technical_name": "namazig",
+      "name_ar": "نماذج",
+      "name_en": "Templates",
+      "description_ar": "نماذج قانونية وعقود ووثائق",
+      "description_en": "Legal templates, contracts, and documents"
+    }
+  ]
+}
+

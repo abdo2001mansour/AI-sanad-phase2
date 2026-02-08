@@ -1,0 +1,96 @@
+{
+  "classifications": [
+    {
+      "id": "administrative_law",
+      "name_ar": "النظام الإداري",
+      "name_en": "Administrative Law",
+      "description_ar": "الأنظمة المتعلقة بالإدارة الحكومية والجهات الإدارية",
+      "description_en": "Regulations related to government administration and administrative bodies"
+    },
+    {
+      "id": "civil_transactions",
+      "name_ar": "نظام المعاملات المدنية",
+      "name_en": "Civil Transactions Law",
+      "description_ar": "الأنظمة المتعلقة بالمعاملات المدنية والعقود",
+      "description_en": "Regulations related to civil transactions and contracts"
+    },
+    {
+      "id": "commercial_law",
+      "name_ar": "النظام التجاري",
+      "name_en": "Commercial Law",
+      "description_ar": "الأنظمة المتعلقة بالتجارة والأعمال التجارية",
+      "description_en": "Regulations related to commerce and commercial activities"
+    },
+    {
+      "id": "labor_law",
+      "name_ar": "نظام العمل",
+      "name_en": "Labor Law",
+      "description_ar": "الأنظمة المتعلقة بالعمل وحقوق العمال وأصحاب العمل",
+      "description_en": "Regulations related to employment, workers' rights, and employers"
+    },
+    {
+      "id": "criminal_law",
+      "name_ar": "النظام الجزائي",
+      "name_en": "Criminal Law",
+      "description_ar": "الأنظمة المتعلقة بالجرائم والعقوبات",
+      "description_en": "Regulations related to crimes and penalties"
+    },
+    {
+      "id": "sharia_procedures",
+      "name_ar": "نظام المرافعات الشرعية",
+      "name_en": "Sharia Litigation Procedures Law",
+      "description_ar": "الأنظمة المتعلقة بإجراءات التقاضي الشرعي",
+      "description_en": "Regulations related to Sharia litigation procedures"
+    },
+    {
+      "id": "criminal_procedures",
+      "name_ar": "نظام الإجراءات الجزائية",
+      "name_en": "Criminal Procedures Law",
+      "description_ar": "الأنظمة المتعلقة بإجراءات التحقيق والمحاكمة الجزائية",
+      "description_en": "Regulations related to criminal investigation and trial procedures"
+    },
+    {
+      "id": "companies_law",
+      "name_ar": "نظام الشركات",
+      "name_en": "Companies Law",
+      "description_ar": "الأنظمة المتعلقة بتأسيس وإدارة الشركات",
+      "description_en": "Regulations related to company formation and management"
+    },
+    {
+      "id": "commercial_registry",
+      "name_ar": "نظام السجل التجاري",
+      "name_en": "Commercial Registry Law",
+      "description_ar": "الأنظمة المتعلقة بالسجل التجاري وتسجيل الأعمال",
+      "description_en": "Regulations related to commercial registry and business registration"
+    },
+    {
+      "id": "intellectual_property",
+      "name_ar": "نظام الملكية الفكرية",
+      "name_en": "Intellectual Property Law",
+      "description_ar": "الأنظمة المتعلقة بحقوق الملكية الفكرية وبراءات الاختراع",
+      "description_en": "Regulations related to intellectual property rights and patents"
+    },
+    {
+      "id": "legal_practice",
+      "name_ar": "نظام المحاماة",
+      "name_en": "Legal Practice Law",
+      "description_ar": "الأنظمة المتعلقة بمزاولة مهنة المحاماة",
+      "description_en": "Regulations related to the legal profession and practice of law"
+    },
+    {
+      "id": "enforcement_law",
+      "name_ar": "نظام التنفيذ",
+      "name_en": "Enforcement Law",
+      "description_ar": "الأنظمة المتعلقة بتنفيذ الأحكام القضائية",
+      "description_en": "Regulations related to enforcement of judicial rulings"
+    },
+    {
+      "id": "bankruptcy_law",
+      "name_ar": "نظام الإفلاس",
+      "name_en": "Bankruptcy Law",
+      "description_ar": "الأنظمة المتعلقة بإجراءات الإفلاس وإعادة التنظيم المالي",
+      "description_en": "Regulations related to bankruptcy and financial restructuring procedures"
+    }
+  ]
+}
+

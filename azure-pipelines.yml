@@ -1,0 +1,117 @@
+trigger:
+- master
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+  
+steps:
+#-------------------------------------------------------
+  #Preparing environment
+#-------------------------------------------------------
+  - task: SSH@0
+    displayName: "Pulling Latest Code"
+    inputs:
+      sshEndpoint: 'N-H AI'
+      runOptions: "inline"
+      inline: |
+        echo "Pulling updates..."
+        cd /var/www/Exab-Ai
+        git reset --hard HEAD
+        git pull origin main || git pull origin master || git pull
+        echo "Environment prepared."
+      failOnStdErr: false
+
+#-------------------------------------------------------
+  #Building and Starting Docker Container
+#-------------------------------------------------------
+  - task: SSH@0
+    displayName: "Deploy Application"
+    inputs:
+      sshEndpoint: 'N-H AI'
+      runOptions: "inline"
+      inline: |
+        cd /var/www/Exab-Ai || { echo "Cannot cd to project path"; exit 1; }
+        
+        echo "Stopping old container..."
+        docker stop fastapi-app 2>/dev/null || echo "No container to stop"
+        docker rm fastapi-app 2>/dev/null || echo "No container to remove"
+        
+        echo "Removing old image..."
+        docker rmi fastapi-app 2>/dev/null || echo "No image to remove"
+        
+        echo "Building new image..."
+        docker build -t fastapi-app . || { echo "Build failed"; exit 1; }
+        
+        echo "Starting container..."
+        CONTAINER_ID=$(docker run -d \
+          --name fastapi-app \
+          -p 8000:8000 \
+          -e OPENAI_API_KEY="$(OPENAI_API_KEY)" \
+          -e PERPLEXITY_API_KEY="$(PERPLEXITY_API_KEY)" \
+          -e GOOGLE_API_KEY="$(GOOGLE_API_KEY)" \
+          -e PINECONE_API_KEY="$(PINECONE_API_KEY)" \
+          -e GROQ_API_KEY="$(GROQ_API_KEY)" \
+          -e AWS_ACCESS_KEY_ID="$(AWS_ACCESS_KEY_ID)" \
+          -e AWS_SECRET_ACCESS_KEY="$(AWS_SECRET_ACCESS_KEY)" \
+          -e DEBUG=False \
+          --restart unless-stopped \
+          fastapi-app) || { echo "Container start failed"; exit 1; }
+        
+        echo "Container started with ID: $CONTAINER_ID"
+        echo "Waiting for application to initialize (30 seconds)..."
+        sleep 30
+        
+        echo "=== Container Status ==="
+        docker ps -a | grep fastapi-app || echo "Container not found"
+        
+        echo "=== Container Logs (last 50 lines) ==="
+        docker logs fastapi-app --tail 50 || echo "Could not retrieve logs"
+        
+        echo "=== Checking if container is running ==="
+        if ! docker ps | grep -q fastapi-app; then
+          echo "ERROR: Container is not running!"
+          echo "=== Full Container Logs ==="
+          docker logs fastapi-app 2>&1 || true
+          echo "=== Container Exit Code ==="
+          docker inspect fastapi-app --format='{{.State.ExitCode}}' 2>&1 || true
+          exit 1
+        fi
+        
+        echo "=== Testing health endpoint (with retries) ==="
+        MAX_RETRIES=5
+        RETRY_COUNT=0
+        HEALTH_CHECK_PASSED=false
+        
+        while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+          echo "Health check attempt $((RETRY_COUNT + 1))/$MAX_RETRIES..."
+          if curl -f -s http://localhost:8000/health > /dev/null 2>&1; then
+            echo "✅ Health check passed!"
+            HEALTH_CHECK_PASSED=true
+            break
+          else
+            echo "⏳ Health check failed, waiting 10 seconds..."
+            sleep 10
+            RETRY_COUNT=$((RETRY_COUNT + 1))
+          fi
+        done
+        
+        if [ "$HEALTH_CHECK_PASSED" = false ]; then
+          echo "❌ Health check failed after $MAX_RETRIES attempts"
+          echo "=== Latest Container Logs ==="
+          docker logs fastapi-app --tail 100 2>&1 || true
+          echo "=== Testing root endpoint ==="
+          curl -v http://localhost:8000/ 2>&1 || true
+          echo "=== Testing /docs endpoint ==="
+          curl -v http://localhost:8000/docs 2>&1 || true
+          echo "=== Container Process Status ==="
+          docker top fastapi-app 2>&1 || true
+          exit 1
+        fi
+        
+        echo "=== Deployment completed successfully! ==="
+        echo "Application available at: http://72.60.92.159:8000"
+        echo "API Documentation: http://72.60.92.159:8000/docs"
+        echo "Health endpoint: http://72.60.92.159:8000/health"
+      failOnStdErr: false
+

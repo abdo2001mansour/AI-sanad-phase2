@@ -1,0 +1,106 @@
+{
+  "models": [
+    {
+      "id": "Sanad",
+      "name": "Sanad",
+      "base_model": "llama-3.1-8b-instant",
+      "provider": "groq",
+      "pricing": {
+        "input": 0.05,
+        "cached_input": null,
+        "output": 0.08
+      },
+      "context_length": {
+        "input": 131072,
+        "output": 131072
+      },
+      "capabilities": {
+        "thinking": false,
+        "web_search": true,
+        "rag": true
+      }
+    },
+    {
+      "id": "Rashed",
+      "name": "Rashed",
+      "base_model": "gpt-4o",
+      "provider": "openai",
+      "pricing": {
+        "input": 2.50,
+        "cached_input": 1.25,
+        "output": 10.00
+      },
+      "context_length": {
+        "input": 128000,
+        "output": 16384
+      },
+      "capabilities": {
+        "thinking": false,
+        "web_search": true,
+        "rag": true
+      }
+    },
+    {
+      "id": "Rashed-Thinking",
+      "name": "Rashed (Thinking Mode)",
+      "base_model": "o1",
+      "provider": "openai",
+      "pricing": {
+        "input": 15.00,
+        "cached_input": 7.50,
+        "output": 60.00
+      },
+      "context_length": {
+        "input": 200000,
+        "output": 100000
+      },
+      "capabilities": {
+        "thinking": true,
+        "web_search": false,
+        "rag": true
+      },
+      "description": "Advanced reasoning model with extended thinking capabilities for complex legal analysis"
+    },
+    {
+      "id": "Nora",
+      "name": "Nora",
+      "base_model": "gemini-2.0-flash",
+      "provider": "gemini",
+      "pricing": {
+        "input": 0.10,
+        "cached_input": 0.025,
+        "output": 0.40
+      },
+      "context_length": {
+        "input": 1000000,
+        "output": 32768
+      },
+      "capabilities": {
+        "thinking": false,
+        "web_search": true,
+        "rag": true
+      }
+    },
+    {
+      "id": "Nora-Thinking",
+      "name": "Nora (Thinking Mode)",
+      "base_model": "gemini-2.0-flash-exp",
+      "provider": "gemini",
+      "pricing": {
+        "input": 0.10,
+        "cached_input": 0.025,
+        "output": 0.40
+      },
+      "context_length": {
+        "input": 1000000,
+        "output": 32768
+      },
+      "capabilities": {
+        "thinking": true,
+        "web_search": true,
+        "rag": true
+      },
+      "description": "Experimental model with enhanced capabilities for complex legal questions (Note: Gemini thinking models are experimental and model names change frequently. Using gemini-2.0-flash-exp as fallback)"
+    }
+  ]
+}
